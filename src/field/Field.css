@@ -1,0 +1,279 @@
+.field {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+/* --- turf --------------------------------------------------------------- */
+
+.f-out-of-play {
+  fill: var(--night-2);
+}
+
+.f-grass {
+  fill: var(--grass);
+}
+
+.f-grass-out {
+  fill: var(--grass-out);
+}
+
+.f-dirt {
+  fill: var(--dirt);
+}
+
+.f-basepath {
+  fill: none;
+  stroke: var(--dirt);
+  stroke-linejoin: round;
+}
+
+.f-mound {
+  fill: var(--dirt-light);
+}
+
+.f-fence {
+  fill: none;
+  stroke: var(--fence);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.f-chalk-line {
+  fill: none;
+  stroke: var(--chalk);
+  stroke-width: 2;
+  opacity: 0.85;
+}
+
+.f-plate {
+  fill: var(--chalk);
+}
+
+/* --- bases -------------------------------------------------------------- */
+
+.f-base {
+  fill: none;
+  stroke: var(--chalk);
+  stroke-width: 2.5;
+}
+
+.f-base--occupied {
+  fill: var(--chalk);
+}
+
+.f-runner {
+  fill: var(--runner);
+  stroke: var(--night);
+  stroke-width: 2;
+}
+
+.f-runner-pip {
+  fill: var(--chalk);
+}
+
+/* --- fielders ----------------------------------------------------------- */
+
+.f-fielder-dot {
+  fill: var(--night);
+  fill-opacity: 0.72;
+  stroke: var(--chalk);
+  stroke-width: 1.25;
+  stroke-opacity: 0.55;
+}
+
+.f-fielder-label {
+  fill: var(--chalk);
+  fill-opacity: 0.8;
+  font-family: var(--font-scoreboard);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-anchor: middle;
+}
+
+.f-fielder--you .f-fielder-dot {
+  fill: var(--you);
+  fill-opacity: 1;
+  stroke: var(--night);
+  stroke-width: 2;
+  stroke-opacity: 1;
+}
+
+.f-fielder--you .f-fielder-label {
+  fill: var(--night);
+  fill-opacity: 1;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.f-you-ring {
+  fill: none;
+  stroke: var(--you);
+  stroke-width: 2;
+  stroke-opacity: 0.55;
+  stroke-dasharray: 3 5;
+}
+
+/* --- batted ball -------------------------------------------------------- */
+
+.f-ball-halo {
+  fill: none;
+  stroke: var(--night);
+  stroke-width: 6;
+  stroke-opacity: 0.55;
+  stroke-linecap: round;
+}
+
+.f-ball-line {
+  fill: none;
+  stroke: var(--chalk);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.f-ball--line .f-ball-line {
+  stroke-width: 3.5;
+}
+
+.f-ball--line .f-ball-halo {
+  stroke-width: 7.5;
+}
+
+.f-ball-mark {
+  fill: var(--chalk);
+  stroke: var(--night);
+  stroke-width: 1.75;
+}
+
+.f-ball--muted {
+  opacity: 0.62;
+}
+
+/* --- answer overlay ----------------------------------------------------- */
+
+.f-arrow-halo {
+  fill: none;
+  stroke: var(--night);
+  stroke-width: 7;
+  stroke-opacity: 0.55;
+  stroke-linecap: round;
+}
+
+.f-arrow-line {
+  fill: none;
+  stroke: var(--you);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+
+.f-step--move .f-arrow-line {
+  stroke-dasharray: 9 7;
+}
+
+.f-arrow-head {
+  fill: var(--you);
+  stroke: var(--night);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+/* A spot to stand on: dashed, hollow. A base to touch: solid, with a centre. */
+.f-spot-ring {
+  fill: var(--night);
+  fill-opacity: 0.35;
+  stroke: var(--you);
+  stroke-width: 3;
+  stroke-dasharray: 5 5;
+}
+
+.f-touch-ring {
+  fill: none;
+  stroke: var(--you);
+  stroke-width: 3.5;
+}
+
+.f-touch-dot {
+  fill: var(--you);
+  stroke: var(--night);
+  stroke-width: 1.5;
+}
+
+/*
+ * The single piece of motion in the app: the correct play draws itself once so
+ * the eye follows the path. 600 is longer than any path in a 400x392 field, so
+ * one constant covers every step without measuring geometry in JS.
+ */
+.f-overlay--draw .f-arrow-halo,
+.f-overlay--draw .f-arrow-line {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: f-draw 0.45s ease-out forwards;
+}
+
+.f-overlay--draw .f-step--move .f-arrow-line {
+  /* Dashed arrows can't also carry the draw dash, so fade this one in. */
+  stroke-dasharray: 9 7;
+  stroke-dashoffset: 0;
+  animation: f-fade 0.45s ease-out forwards;
+  opacity: 0;
+}
+
+.f-overlay--draw .f-arrow-head,
+.f-overlay--draw .f-step--touch {
+  opacity: 0;
+  animation: f-fade 0.2s ease-out 0.4s forwards;
+}
+
+@keyframes f-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes f-fade {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .f-overlay--draw .f-arrow-halo,
+  .f-overlay--draw .f-arrow-line,
+  .f-overlay--draw .f-step--move .f-arrow-line,
+  .f-overlay--draw .f-arrow-head,
+  .f-overlay--draw .f-step--touch {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  .f-overlay--draw .f-step--move .f-arrow-line {
+    stroke-dasharray: 9 7;
+  }
+}
+
+/* --- outs --------------------------------------------------------------- */
+
+.f-outs-label {
+  fill: var(--chalk);
+  fill-opacity: 0.65;
+  font-family: var(--font-scoreboard);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.f-out-pip {
+  fill: none;
+  stroke: var(--chalk);
+  stroke-opacity: 0.55;
+  stroke-width: 2;
+}
+
+.f-out-pip--on {
+  fill: var(--chalk);
+  fill-opacity: 0.9;
+  stroke-opacity: 0.9;
+}

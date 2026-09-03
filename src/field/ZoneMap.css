@@ -1,0 +1,32 @@
+.zonemap {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.zm-dot {
+  fill: var(--you);
+  stroke: var(--night);
+  stroke-width: 1;
+}
+
+.zm-text {
+  fill: var(--chalk);
+  font-family: var(--font-scoreboard);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--night);
+  stroke-width: 3;
+  stroke-opacity: 0.85;
+  stroke-linejoin: round;
+}
+
+.zm-zone--play .zm-dot {
+  fill: var(--runner);
+}
+
+.zm-zone--play .zm-text {
+  fill: var(--runner-text);
+}

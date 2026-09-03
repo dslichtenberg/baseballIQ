@@ -1,0 +1,33 @@
+/*
+ * Chalk and dirt. The interface reads like markings on a field.
+ *
+ * The five palette values from the spec are unchanged. Four more were added,
+ * each for a reason the spec's set could not cover:
+ *   --grass-out    the mow line that tells the outfield from the infield
+ *   --dirt-light   the mound has to separate from the dirt around it
+ *   --fence        an outfield fence drawn in --chalk reads as a chalk line
+ *   --you          your fielder must be findable in one glance, and gold is
+ *                  the only warm note that survives on both dirt and grass
+ *   --runner       the other team's runners, cool so they never read as "you"
+ */
+:root {
+  --dirt: #8e4a2c;
+  --dirt-light: #a25a38;
+  --grass: #2e5e3a;
+  --grass-out: #27512f;
+  --chalk: #f7f4ec;
+  --night: #16202b;
+  --night-2: #1e2b39;
+  --fence: #6d5847;
+  --correct: #3fa34d;
+  --wrong: #c1443b;
+  --you: #f5c542;
+  --runner: #5b9bd5;
+  --runner-text: #a8cdf0;
+
+  --font-scoreboard: 'Roboto Condensed', 'Arial Narrow', 'Helvetica Neue', 'Liberation Sans Narrow', system-ui, sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  --shell-pad: 16px;
+  --radius: 6px;
+}

@@ -81,6 +81,14 @@ fix is one self-hosted woff2, not a Google Fonts link.
 GitHub Pages from Actions, on push. The workflow runs `npm ci`, `npm run
 validate`, `npm run build`, and uploads `dist`.
 
+**One manual step is needed before the first deploy can succeed:** a repo admin
+has to turn Pages on under *Settings → Pages → Source: GitHub Actions*. The
+workflow token is not permitted to create the Pages site itself, so until that
+switch is flipped the `configure-pages` step fails and the deploy job is
+skipped. Everything before it — install, validate, build — passes. Note that
+Pages on a **private** repo requires a paid GitHub plan; on a free plan the
+repo has to be public.
+
 `vite.config.ts` reads `BASE_PATH`, and the workflow sets it from
 `github.event.repository.name`, so the Pages base path cannot drift out of sync
 with the URL GitHub actually serves. Local builds fall back to `/baseballIQ/`.

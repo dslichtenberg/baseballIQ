@@ -9,6 +9,7 @@
 import { SCENARIOS } from '../src/content/scenarios/index.ts'
 import { isBallZone, isZone, BALL_ZONE_NAMES, ZONE_NAMES } from '../src/field/zones.ts'
 import { isPosition, isAlignment } from '../src/field/positions.ts'
+import { refPoint, lineUpSpot } from '../src/field/geometry.ts'
 import type { Scenario, OverlayStep, FieldRef } from '../src/types.ts'
 
 const errors: string[] = []
@@ -79,9 +80,33 @@ function checkScenario(s: Scenario, seen: Set<string>) {
     fail(id, `correctOptionId "${s.correctOptionId}" does not match any option id`)
   }
 
+  // A button a kid reads at arm's length in the sun. Keep it short.
+  for (const o of s.options) {
+    const words = o.label.trim().split(/\s+/).length
+    if (words > 8) fail(id, `option "${o.label}" is ${words} words; keep it under 8`)
+    if (!o.label.trim()) fail(id, `option "${o.id}" has an empty label`)
+  }
+
+  const labels = s.options.map((o) => o.label.trim().toLowerCase())
+  if (new Set(labels).size !== labels.length) fail(id, 'two options say the same thing')
+
+  if (!s.prompt.trim().endsWith('?')) {
+    fail(id, 'prompt is the question, so it should end with a question mark')
+  }
+
   const explanation = (s.explanation ?? '').trim()
   if (explanation.length < 20) {
     fail(id, 'explanation is missing or too short; it must give a reason, not restate the answer')
+  }
+
+  // The rule that matters most and is easiest to break in a hurry: an
+  // explanation has to say WHY, and repeating the answer back is not why.
+  const correct = s.options.find((o) => o.id === s.correctOptionId)
+  if (correct) {
+    const bare = (t: string) => t.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim()
+    if (bare(explanation) === bare(correct.label)) {
+      fail(id, 'explanation just restates the correct answer; say why it is right')
+    }
   }
 
   if ((s.mode === 'make-the-play' || s.mode === 'where-do-i-go') && !s.youAre) {
@@ -99,6 +124,57 @@ function checkScenario(s: Scenario, seen: Set<string>) {
   }
 
   s.overlay?.steps.forEach((step, i) => checkOverlayStep(id, i, step, Boolean(s.ball)))
+  checkOverlayDraws(s)
+}
+
+/**
+ * Actually resolve the geometry every overlay will draw.
+ *
+ * Names that exist in the table can still describe a play that cannot be drawn:
+ * a cut whose ball and target are the same point has no line to stand on, and a
+ * throw from a spot to itself is a zero-length arrow. Catching those here beats
+ * finding them when a kid taps an answer and gets an empty field.
+ */
+function checkOverlayDraws(s: Scenario) {
+  const id = s.id || '<missing id>'
+  const alignment = s.state.alignment ?? 'normal'
+  const finite = (p: { x: number; y: number }) => Number.isFinite(p.x) && Number.isFinite(p.y)
+  const apart = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+    Math.hypot(a.x - b.x, a.y - b.y)
+
+  s.overlay?.steps.forEach((step, i) => {
+    const where = `overlay step ${i}`
+    try {
+      if (step.kind === 'touch') {
+        if (!finite(refPoint(step.at, alignment))) fail(id, `${where} touch point is not on the field`)
+        return
+      }
+
+      if (step.kind === 'cut' || step.kind === 'relay') {
+        const source = step.ball ?? s.ball?.zone
+        if (!source) return // already reported
+        const ball = refPoint(source, alignment)
+        const base = refPoint(step.to, alignment)
+        if (apart(ball, base) < 20) {
+          fail(id, `${where} is a ${step.kind} from "${source}" to "${step.to}", which are the same place`)
+          return
+        }
+        const spot = lineUpSpot(ball, base, step.kind)
+        if (!finite(spot)) fail(id, `${where} ${step.kind} spot does not resolve to a point`)
+        return
+      }
+
+      const from = refPoint(step.kind === 'move' ? (step.from ?? step.who) : step.from, alignment)
+      const to = refPoint(step.to, alignment)
+      if (!finite(from) || !finite(to)) {
+        fail(id, `${where} does not resolve to points on the field`)
+      } else if (apart(from, to) < 12) {
+        fail(id, `${where} draws an arrow from a spot to itself; there is nothing to show`)
+      }
+    } catch (e) {
+      fail(id, `${where} could not be drawn: ${(e as Error).message}`)
+    }
+  })
 }
 
 const seen = new Set<string>()

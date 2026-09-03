@@ -24,13 +24,21 @@ screen and it opens in a dugout with the bars at zero.
 | **M1 ✅** | Vite scaffold, field SVG, zone lookup table, deployed to Pages |
 | **M2 ✅** | Content files, session builder, question and feedback screens, results and review, validation in CI |
 | **M3 ✅** | localStorage progress, coach mode, division filter, answer overlay, manifest and offline shell |
-| M4 | 40+ scenarios and a reading-level pass on the copy |
+| **M4 ◑** | 112 scenarios in the bank. Reading-level pass still to do. |
 
-Everything left is content. The code is the small part.
+The bank is 112 scenarios: 41 make-the-play, 42 where-do-i-go, 29 what's-the-call.
+98 are eligible for AAA and all 112 for Majors, so every mode fills a ten-play
+session in either division.
 
-The seed bank is the twelve scenarios from the build spec: four make-the-play,
-three where-do-i-go, five what's-the-call. Three are tagged Majors only, so an
-AAA session currently draws from nine.
+Eighteen carry `localRuleSensitive`, and those are concentrated where Little
+League actually diverges: leaving early, stealing, sliding, the uncaught third
+strike. The rest of the rules content is deliberately built on the parts of
+baseball that do not vary between divisions — fair and foul, what counts as a
+catch, force versus tag.
+
+**None of the rules content has been checked against a rulebook.** No `ruleRef`
+is a real citation; each is a plain description with a TODO. That check is a
+coach's job, not the code's.
 
 ## What is stored, and what is not
 

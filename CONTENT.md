@@ -82,6 +82,13 @@ they reach a kid:
 - A missing `explanation`, or one under 20 characters.
 - A missing `youAre` on a `make-the-play` or `where-do-i-go` scenario.
 - A `ball.zone` or an overlay target that is not in the zone lookup table.
+- An option label of more than 8 words, or two options that say the same thing.
+- A prompt that does not end in a question mark.
+- An explanation that is just the correct answer typed again.
+- An overlay that cannot actually be drawn: a cut or relay whose ball and target
+  are the same place, or an arrow from a spot to itself. The validator resolves
+  every overlay's real geometry, so a play that would render as an empty field
+  fails the build instead.
 
 ## Two rules the validator cannot check, so you have to
 

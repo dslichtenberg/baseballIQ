@@ -12,11 +12,13 @@
  * editing anything here.
  * ---------------------------------------------------------------------------
  *
- * M1 ships no scenarios. The bank arrives in M2; this file is the single
- * import point the session builder and the validation script both read, so
- * adding a mode file never means touching a component.
+ * The single import point the session builder and the validation script both
+ * read, so adding a mode file never means touching a component.
  */
 
 import type { Scenario } from '../../types.ts'
+import { MAKE_THE_PLAY } from './make-the-play.ts'
+import { WHERE_DO_I_GO } from './where-do-i-go.ts'
+import { WHATS_THE_CALL } from './whats-the-call.ts'
 
-export const SCENARIOS: Scenario[] = []
+export const SCENARIOS: Scenario[] = [...MAKE_THE_PLAY, ...WHERE_DO_I_GO, ...WHATS_THE_CALL]

@@ -12,23 +12,27 @@ Three modes: **make the play** (the ball is hit to you, where do you throw it),
 > League rulebook and the LBLL local rules before it is put in front of
 > players.** See [CONTENT.md](./CONTENT.md).
 
-## Status: milestone 1
+## Status: milestone 2
 
-M1 is the field diagram and nothing else. There is no question flow, no
-scoring, and nothing to tap yet. The app currently renders a proof sheet: every
-shape the diagram can draw, on one scroll, plus the complete zone lookup table
-plotted where each name lands.
+The app plays. Pick a division and a mode, answer ten plays one thumb at a
+time, see the correct play drawn on the field with a reason, and get a results
+screen you can tap back into.
 
 | Milestone | What |
 | --- | --- |
 | **M1 ✅** | Vite scaffold, field SVG, zone lookup table, deployed to Pages |
-| M2 | Scenario type, content files, session builder, question and results screens, validation in CI |
-| M3 | Answer overlay animation, localStorage progress, coach mode, division filter, manifest and offline shell |
+| **M2 ✅** | Content files, session builder, question and feedback screens, results and review, validation in CI |
+| M3 | localStorage progress, manifest and offline shell |
 | M4 | 40+ scenarios and a reading-level pass on the copy |
 
-The field diagram is the piece everything else depends on, so it is worth a
-second look before M2 starts. Notes on what to look at are at the bottom of
-this file.
+M3 is smaller than the plan expected: the answer overlay, coach mode, and the
+division filter all landed early because the pieces they needed were already
+there. What is left is remembering progress between sessions, and making the
+app installable and usable with no signal.
+
+The seed bank is the twelve scenarios from the build spec: four make-the-play,
+three where-do-i-go, five what's-the-call. Three are tagged Majors only, so an
+AAA session currently draws from nine.
 
 ## Running it
 
@@ -49,6 +53,12 @@ for it.
 ```
 src/
   types.ts               the content contract: Scenario, GameState, PlayOverlay
+  app/state.ts           every screen in one union and one reducer. No router.
+  session/
+    build.ts             which ten questions this session asks
+    progress.ts          what the app remembers, keyed by scenario id
+  screens/               Home, Question (also does feedback and review), Results
+  components/            SituationStrip: the little scoreboard
   field/
     zones.ts             THE ZONE LOOKUP TABLE. Named spots to coordinates.
     positions.ts         where each fielder stands

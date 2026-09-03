@@ -1,23 +1,14 @@
 .shell {
   max-width: 560px;
   margin: 0 auto;
-  padding: 0 var(--shell-pad) 48px;
+  padding: 0 var(--shell-pad) 40px;
 }
 
 /* --- masthead: a scoreboard header, not a hero ---------------------------- */
 
 .masthead {
-  padding: 28px 0 20px;
+  padding: 26px 0 16px;
   border-bottom: 2px solid var(--chalk);
-}
-
-.masthead-kicker {
-  font-family: var(--font-scoreboard);
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--you);
-  margin-bottom: 4px;
 }
 
 .masthead-title {
@@ -27,43 +18,31 @@
 }
 
 .masthead-sub {
-  margin-top: 10px;
-  font-size: 17px;
+  margin-top: 8px;
+  font-size: 18px;
   color: var(--chalk);
   opacity: 0.82;
 }
 
-/* --- plates: a chalk rule and a label, then the field --------------------- */
-
-.plate {
-  padding-top: 28px;
-}
-
-.plate-head {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(247, 244, 236, 0.28);
-  margin-bottom: 12px;
-}
-
-.plate-title {
-  font-size: 20px;
-  line-height: 1.2;
-}
-
-.plate-note {
-  margin-top: 10px;
-  font-size: 17px;
-  color: var(--chalk);
-  opacity: 0.78;
-}
-
 .footer {
-  margin-top: 40px;
-  padding-top: 16px;
+  margin-top: 36px;
+  padding-top: 14px;
   border-top: 1px solid rgba(247, 244, 236, 0.28);
-  font-size: 17px;
-  color: var(--you);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--chalk);
+  opacity: 0.6;
+}
+
+/* Visible to screen readers, not to eyes. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

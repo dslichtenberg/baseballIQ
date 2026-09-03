@@ -42,6 +42,11 @@ export interface FieldProps {
   youAre?: Position
   /** Only passed after the answer is revealed. */
   answerOverlay?: PlayOverlay
+  /**
+   * Not drawn on the field — the situation strip above it is a real scoreboard
+   * and says this better. Kept because the count belongs in the diagram's
+   * description for anyone reading it with a screen reader.
+   */
   outs: 0 | 1 | 2
   /** How the defense is set up. Moves the infielders; defaults to normal depth. */
   alignment?: Alignment
@@ -83,7 +88,6 @@ export function Field({
           animate={animateOverlay}
         />
       ) : null}
-      <Outs outs={outs} />
     </svg>
   )
 }
@@ -301,24 +305,6 @@ function Arrow({
   )
 }
 
-function Outs({ outs }: { outs: 0 | 1 | 2 }) {
-  return (
-    <g aria-hidden="true" className="f-outs">
-      <text x={16} y={22} className="f-outs-label">
-        OUTS
-      </text>
-      {[0, 1, 2].map((i) => (
-        <circle
-          key={i}
-          cx={78 + i * 15}
-          cy={18}
-          r={5}
-          className={i < outs ? 'f-out-pip f-out-pip--on' : 'f-out-pip'}
-        />
-      ))}
-    </g>
-  )
-}
 
 // ---------------------------------------------------------------------------
 

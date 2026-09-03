@@ -21,6 +21,12 @@
   --fence: #6d5847;
   --correct: #3fa34d;
   --wrong: #c1443b;
+  /*
+   * --wrong is a fine border and fill on the dark shell, but as TEXT on it it
+   * lands at 3.3:1, under the 4.5:1 floor. This is the same red lightened until
+   * it clears the floor (about 6.8:1); use it for any red type or glyph.
+   */
+  --wrong-text: #f08a82;
   --you: #f5c542;
   --runner: #5b9bd5;
   --runner-text: #a8cdf0;

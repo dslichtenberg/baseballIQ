@@ -1,0 +1,120 @@
+.home-block {
+  padding-top: 26px;
+}
+
+.home-heading {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  opacity: 0.7;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(247, 244, 236, 0.28);
+  margin-bottom: 12px;
+}
+
+/* --- division: a chalked-on segmented control ---------------------------- */
+
+.segmented {
+  display: flex;
+  border: 2px solid var(--chalk);
+}
+
+.seg {
+  flex: 1;
+  min-height: 52px;
+  padding: 12px;
+  border: 0;
+  border-right: 2px solid var(--chalk);
+  background: transparent;
+  color: var(--chalk);
+  font-family: var(--font-scoreboard);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.seg:last-child {
+  border-right: 0;
+}
+
+.seg--on {
+  background: var(--chalk);
+  color: var(--night);
+}
+
+/* --- modes: full width rows, not chips ----------------------------------- */
+
+.mode-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mode {
+  display: block;
+  width: 100%;
+  min-height: 64px;
+  padding: 12px 14px;
+  text-align: left;
+  background: var(--night-2);
+  border: 2px solid rgba(247, 244, 236, 0.4);
+  border-left: 6px solid var(--you);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.mode:active {
+  background: var(--dirt);
+}
+
+.mode-title {
+  display: block;
+  font-family: var(--font-scoreboard);
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.mode-blurb {
+  display: block;
+  margin-top: 2px;
+  font-size: 17px;
+  opacity: 0.78;
+}
+
+/* --- coach mode ---------------------------------------------------------- */
+
+.coach {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 2px dashed rgba(247, 244, 236, 0.4);
+  cursor: pointer;
+}
+
+.coach-box {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  margin: 2px 0 0;
+  accent-color: var(--you);
+}
+
+.coach-title {
+  display: block;
+  font-family: var(--font-scoreboard);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.coach-blurb {
+  display: block;
+  margin-top: 2px;
+  font-size: 17px;
+  opacity: 0.78;
+}

@@ -2,6 +2,7 @@ import type { Division, Scenario } from '../types.ts'
 import { SCENARIOS } from '../content/scenarios/index.ts'
 import { buildSession, shuffle, type ModeChoice, type Session } from '../session/build.ts'
 import { EMPTY_PROGRESS, record, type Progress } from '../session/progress.ts'
+import { load } from '../session/storage.ts'
 
 /**
  * All of the app's screen state, in one union and one reducer. There is no
@@ -54,6 +55,22 @@ export const INITIAL: AppState = {
   coachMode: false,
   progress: EMPTY_PROGRESS,
   screen: { name: 'home' },
+}
+
+/**
+ * Start from whatever was remembered, falling back to the defaults for anything
+ * missing. A refresh mid-session lands here: the session itself is not saved,
+ * so the app starts clean at home rather than trying to restore a half-finished
+ * round it might get wrong.
+ */
+export function initial(): AppState {
+  const saved = load()
+  return {
+    ...INITIAL,
+    division: saved.division ?? INITIAL.division,
+    coachMode: saved.coachMode ?? INITIAL.coachMode,
+    progress: saved.progress ?? INITIAL.progress,
+  }
 }
 
 function openQuestion(

@@ -12,3 +12,13 @@ createRoot(root).render(
     <App />
   </StrictMode>,
 )
+
+// Offline shell. Dev has no service worker: it would sit in front of Vite's
+// module graph and serve yesterday's code.
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    // Registration can be blocked outright (private windows, some enterprise
+    // policies). The app works without it; it just needs a signal.
+    navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).catch(() => {})
+  })
+}

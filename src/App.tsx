@@ -1,13 +1,21 @@
-import { useReducer } from 'react'
-import { INITIAL, reducer } from './app/state.ts'
+import { useEffect, useReducer } from 'react'
+import { INITIAL, initial, reducer } from './app/state.ts'
+import { save } from './session/storage.ts'
 import { Home } from './screens/Home.tsx'
 import { Question } from './screens/Question.tsx'
 import { Results } from './screens/Results.tsx'
 import './App.css'
 
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, INITIAL)
+  const [state, dispatch] = useReducer(reducer, INITIAL, initial)
   const screen = state.screen
+
+  // Only the three things worth remembering, and only when one of them changes.
+  // The session in flight is deliberately not saved: a refresh starts clean
+  // rather than restoring a half-finished round.
+  useEffect(() => {
+    save({ progress: state.progress, division: state.division, coachMode: state.coachMode })
+  }, [state.progress, state.division, state.coachMode])
 
   return (
     <div className="shell">

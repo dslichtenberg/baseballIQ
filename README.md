@@ -12,27 +12,40 @@ Three modes: **make the play** (the ball is hit to you, where do you throw it),
 > League rulebook and the LBLL local rules before it is put in front of
 > players.** See [CONTENT.md](./CONTENT.md).
 
-## Status: milestone 2
+## Status: milestone 3
 
-The app plays. Pick a division and a mode, answer ten plays one thumb at a
-time, see the correct play drawn on the field with a reason, and get a results
-screen you can tap back into.
+The app plays, remembers, and works with no signal. Pick a division and a mode,
+answer ten plays one thumb at a time, see the correct play drawn on the field
+with a reason, and get a results screen you can tap back into. Add it to a home
+screen and it opens in a dugout with the bars at zero.
 
 | Milestone | What |
 | --- | --- |
 | **M1 ✅** | Vite scaffold, field SVG, zone lookup table, deployed to Pages |
 | **M2 ✅** | Content files, session builder, question and feedback screens, results and review, validation in CI |
-| M3 | localStorage progress, manifest and offline shell |
+| **M3 ✅** | localStorage progress, coach mode, division filter, answer overlay, manifest and offline shell |
 | M4 | 40+ scenarios and a reading-level pass on the copy |
 
-M3 is smaller than the plan expected: the answer overlay, coach mode, and the
-division filter all landed early because the pieces they needed were already
-there. What is left is remembering progress between sessions, and making the
-app installable and usable with no signal.
+Everything left is content. The code is the small part.
 
 The seed bank is the twelve scenarios from the build spec: four make-the-play,
 three where-do-i-go, five what's-the-call. Three are tagged Majors only, so an
 AAA session currently draws from nine.
+
+## What is stored, and what is not
+
+One localStorage key, `bballiq.v1`, holding three things: per scenario id, how
+many times it has been seen, how many times it was right, how it went last
+time, and when; plus the division and coach-mode switches so a kid does not
+re-pick them every session.
+
+No names, no ages, no teams, no device ids, nothing that could identify a child.
+Nothing leaves the device — there is no server to send it to. The session in
+flight is deliberately not saved, so a refresh mid-round starts clean at home
+rather than restoring a half-finished session it might get wrong.
+
+If localStorage is missing, blocked, throwing, full, or full of garbage from an
+older version, the app plays exactly the same. It just does not remember.
 
 ## Running it
 
@@ -57,6 +70,7 @@ src/
   session/
     build.ts             which ten questions this session asks
     progress.ts          what the app remembers, keyed by scenario id
+    storage.ts           localStorage, defensively. Never allowed to break the app.
   screens/               Home, Question (also does feedback and review), Results
   components/            SituationStrip: the little scoreboard
   field/
@@ -105,6 +119,13 @@ with the URL GitHub actually serves. Local builds fall back to `/baseballIQ/`.
 
 There is no client side routing, so no 404 fallback is needed. Keep it that
 way.
+
+`public/sw.js` is a deliberately dumb service worker: cache the shell on
+install, then network first with a cache fallback, caching each asset the first
+time it is fetched. No precache manifest, no build step, no Workbox. Vite hashes
+asset filenames, which is also what keeps a stale cache from serving an old
+bundle — a new build fetches new URLs, and the fresh `index.html` points at the
+fresh assets. Bump `CACHE` in that file if its own logic changes.
 
 ## Design decisions worth arguing with
 

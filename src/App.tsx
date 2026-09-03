@@ -31,14 +31,40 @@ const PLATES: Plate[] = [
     },
   },
   {
-    title: 'Single to center, first baseman is the cutoff',
-    note: 'A move is a dashed curve, because a player runs around people. A throw is a solid straight line.',
+    title: 'Cut man: base hit to right center, runner trying to score',
+    note: 'The spot is not a name in a table. It is computed from the ball and the base the throw is going to, so it is right for any ball and any target.',
     outs: 1,
     runners: { first: false, second: true, third: false },
     youAre: '1B',
-    ball: { type: 'line', zone: 'shallow center' },
+    ball: { type: 'line', zone: 'right center' },
     answerOverlay: {
-      steps: [{ kind: 'move', who: '1B', from: '1B', to: 'cutoff center' }],
+      steps: [{ kind: 'cut', who: '1B', to: 'home' }],
+    },
+  },
+  {
+    title: 'Relay man: ball in the left center gap',
+    note: 'Same idea, different job. The relay man runs out to the ball instead of setting up in front of the base, and the line is drawn to third because that is where the throw is going.',
+    outs: 0,
+    runners: { first: true, second: false, third: false },
+    youAre: 'SS',
+    ball: { type: 'line', zone: 'deep left center' },
+    answerOverlay: {
+      steps: [{ kind: 'relay', who: 'SS', to: 'third' }],
+    },
+  },
+  {
+    title: 'Infield in, play at the plate',
+    note: 'All four infielders are drawn on the grass in front of the bases. The throw home starts from where the shortstop is actually standing, not from normal depth.',
+    outs: 1,
+    runners: { first: false, second: false, third: true },
+    alignment: 'infield in',
+    youAre: 'SS',
+    ball: { type: 'ground', zone: 'shortstop hole' },
+    answerOverlay: {
+      steps: [
+        { kind: 'throw', from: 'SS', to: 'home' },
+        { kind: 'touch', at: 'home' },
+      ],
     },
   },
   {

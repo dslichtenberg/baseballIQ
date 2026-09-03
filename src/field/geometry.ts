@@ -13,7 +13,7 @@
  */
 
 import { ZONES, type Pt, type ZoneName } from './zones.ts'
-import { POSITIONS, isPosition, type Position } from './positions.ts'
+import { fielderSpot, isPosition, type Alignment, type Position } from './positions.ts'
 
 export const VIEW = { w: 400, h: 384 }
 
@@ -88,8 +88,13 @@ export const BASES: { name: 'first' | 'second' | 'third'; at: Pt }[] = [
 /** Anything a ball, a throw, or a fielder's job can point at. */
 export type FieldRef = ZoneName | Position
 
-export function refPoint(ref: FieldRef): Pt {
-  if (isPosition(ref)) return POSITIONS[ref]
+/**
+ * A position resolves to where that fielder is actually standing, which the
+ * alignment can change. A throw drawn from the shortstop with the infield in
+ * has to start on the grass, not at normal depth.
+ */
+export function refPoint(ref: FieldRef, alignment: Alignment = 'normal'): Pt {
+  if (isPosition(ref)) return fielderSpot(ref, alignment)
   return ZONES[ref]
 }
 
@@ -165,6 +170,50 @@ export function arrowHead(tip: Pt, from: Pt, size = 10): string {
     { x: tip.x - size * 0.55 * Math.cos(angle), y: tip.y - size * 0.55 * Math.sin(angle) },
     { x: tip.x - size * Math.cos(angle + wing), y: tip.y - size * Math.sin(angle + wing) },
   ])
+}
+
+/**
+ * Where a cut man or a relay man stands.
+ *
+ * Both jobs are the same idea — get on the line between the ball and the base
+ * the throw is going to — and they differ only in how far along that line you
+ * go. So the spot is computed from the play rather than looked up, which means
+ * it is right for any ball and any target instead of only for the one target
+ * a fixed name happened to assume.
+ *
+ * A **cut man** sets up a set distance in front of the base, wherever the ball
+ * is. A **relay man** runs out toward the ball and takes a short throw.
+ */
+
+/**
+ * Both distances are set from the ball or the base rather than as a share of
+ * the throw, because the job is physical: the cut man sets up a set distance in
+ * front of the bag, and the relay man goes out until the outfielder has a short
+ * throw. A share of the line would put the relay man on the fence for a long
+ * throw and in the infield for a short one.
+ *
+ * Note this drawing is not to a single scale — the infield is drawn oversized,
+ * so a unit is about 1.8 units per foot near the bases and about 1.4 out in the
+ * outfield. Each constant below is calibrated in the part of the field it
+ * actually applies to.
+ */
+
+/** ~35 ft in front of the base. Short, because a 60 ft diamond is short. */
+const CUT_FROM_BASE = 62
+
+/** ~70 ft off the ball: one easy outfielder throw, which lands in shallow outfield. */
+const RELAY_FROM_BALL = 96
+
+export function lineUpSpot(ball: Pt, base: Pt, role: 'cut' | 'relay'): Pt {
+  const len = Math.hypot(base.x - ball.x, base.y - ball.y) || 1
+  // Fraction of the way from the ball toward the base. Both roles are held back
+  // from the midpoint so a short throw can never put one player on top of the
+  // other, or past the person throwing to them.
+  const t =
+    role === 'cut'
+      ? 1 - Math.min(CUT_FROM_BASE / len, 0.5)
+      : Math.min(0.55, RELAY_FROM_BALL / len)
+  return { x: ball.x + (base.x - ball.x) * t, y: ball.y + (base.y - ball.y) * t }
 }
 
 /** Pull a line back from its endpoint so the arrowhead is not sitting on the base. */

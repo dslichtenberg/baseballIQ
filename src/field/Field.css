@@ -168,8 +168,17 @@
   stroke-linecap: round;
 }
 
-.f-step--move .f-arrow-line {
+.f-arrow--run .f-arrow-line {
   stroke-dasharray: 9 7;
+}
+
+/* Context, not the answer: the ball's route through a cut or relay. */
+.f-arrow--assist {
+  opacity: 0.62;
+}
+
+.f-arrow--assist .f-arrow-line {
+  stroke-width: 2.5;
 }
 
 .f-arrow-head {
@@ -182,7 +191,7 @@
 /* A spot to stand on: dashed, hollow. A base to touch: solid, with a centre. */
 .f-spot-ring {
   fill: var(--night);
-  fill-opacity: 0.35;
+  fill-opacity: 0.55;
   stroke: var(--you);
   stroke-width: 3;
   stroke-dasharray: 5 5;
@@ -212,7 +221,7 @@
   animation: f-draw 0.45s ease-out forwards;
 }
 
-.f-overlay--draw .f-step--move .f-arrow-line {
+.f-overlay--draw .f-arrow--run .f-arrow-line {
   /* Dashed arrows can't also carry the draw dash, so fade this one in. */
   stroke-dasharray: 9 7;
   stroke-dashoffset: 0;
@@ -249,7 +258,7 @@
     opacity: 1;
   }
 
-  .f-overlay--draw .f-step--move .f-arrow-line {
+  .f-overlay--draw .f-arrow--run .f-arrow-line {
     stroke-dasharray: 9 7;
   }
 }

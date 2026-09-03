@@ -119,6 +119,27 @@ dashed ring.** A thrown ball travels straight; a player runs around whoever is
 in the way. That difference stops a "go back up third" arrow from reading as a
 throw to the third baseman it happens to pass.
 
+**Cut and relay spots are computed, not named.** They are two different jobs
+under two different words, and neither one is a fixed place: where you stand
+depends on where the ball is *and* which base the throw is going to. So a
+scenario names the ball and the target, and the diagram puts the player on the
+line between them — which is the actual coaching point. A fixed name would teach
+a location, and would be right for one throwing target and wrong for the rest.
+This replaced three named `cutoff` zones that only ever modelled the throw home.
+
+**The drawing is not to a single scale, and the cut and relay distances know
+it.** A unit is about 1.8 per foot near the bases and about 1.4 out in the
+outfield, because the infield is drawn oversized. The cut distance is calibrated
+in infield units and the relay distance in outfield units. Getting this wrong
+once put the relay man out past the left fielder.
+
+**Defensive alignment lives on the situation, not the answer.** `infield in`,
+`corners in`, and `double play depth` move the infielders, and every overlay
+point resolves against the alignment, so a throw from the shortstop with the
+infield in starts on the grass. "Infield in, ground ball to short" is a
+different question from the same ball at normal depth, and a kid can only see
+that if the shortstop is drawn where he is actually standing.
+
 **The ball path dims once the answer is on the field.** The play still makes
 sense, but the thing being taught wins the picture.
 

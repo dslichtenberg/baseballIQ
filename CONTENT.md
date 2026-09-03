@@ -112,11 +112,14 @@ against `src/field/zones.ts`. You never write a coordinate.
 Ball zones: `home`, `in front of plate`, `mound`, `first`, `second`, `third`,
 `shortstop hole`, `3-4 hole`, `up the middle`, `shallow left`,
 `shallow center`, `shallow right`, `left`, `left center`, `center`,
-`right center`, `right`, `deep left`, `deep center`, `deep right`, `foul left`,
-`foul right`.
+`right center`, `right`, `deep left`, `deep left center`, `deep center`,
+`deep right center`, `deep right`, `foul left`, `foul right`.
 
-Play zones, for overlay targets only: `cutoff left`, `cutoff center`,
-`cutoff right`, `backup first`, `backup second`, `backup third`, `backup home`.
+Play zones, for overlay targets only: `backup first`, `backup second`,
+`backup third`, `backup home`.
+
+There are deliberately no cutoff or relay spots in the table. Those are computed
+from the play; see [Cut and relay](#cut-and-relay).
 
 An overlay step may also target a fielding position (`P`, `C`, `1B`, `2B`,
 `3B`, `SS`, `LF`, `CF`, `RF`), which resolves to where that fielder is
@@ -129,9 +132,61 @@ coordinate from a scenario file.
 ## Overlay steps
 
 - `{ kind: 'throw', from, to }` — a solid straight arrow. A thrown ball.
-- `{ kind: 'move', who?, from, to }` — a dashed curved arrow ending in a
-  dashed ring. A player running to a spot: cutoff, backup, covering a bag.
+- `{ kind: 'move', who, from?, to }` — a dashed curved arrow ending in a dashed
+  ring. A player running to a spot: backing up a base, covering a bag. `from`
+  defaults to wherever `who` starts the play, so you normally leave it out.
+- `{ kind: 'cut', who, to, ball? }` — the cut man.
+- `{ kind: 'relay', who, to, ball? }` — the relay man.
 - `{ kind: 'touch', at }` — a solid ring. A base that gets touched, or a runner
   who gets tagged.
 
 Steps draw in order, one after another, so write them in the order they happen.
+
+### Cut and relay
+
+These are two different jobs and kids are taught them under two different
+words, so they are two different steps.
+
+**Neither one names a place.** You name the ball and the base the throw is going
+to, and the diagram works out where to stand:
+
+```ts
+// Runner trying to score on a base hit to right center. You are the cut man.
+{ kind: 'cut', who: '1B', to: 'home' }
+
+// Ball in the gap, throw is going to third. You go out and take the relay.
+{ kind: 'relay', who: 'SS', to: 'third' }
+```
+
+That is deliberate. The coaching point is *get on the line between the ball and
+where the ball is going*, and a fixed named spot would teach a location
+instead — and would be right for one throwing target and wrong for the others.
+A shortstop relaying a ball from the left field corner to third stands somewhere
+quite different than the same ball going home.
+
+The difference between the two is how far along that line you go. A **cut man**
+sets up a set distance in front of the base. A **relay man** runs out toward the
+ball until the outfielder has a short throw, which lands him in shallow
+outfield.
+
+`ball` defaults to the scenario's own batted ball, so you only pass it for a
+play where the throw starts somewhere other than where the ball was hit. A cut
+or relay on a scenario with no `ball` and no explicit `ball` on the step fails
+validation.
+
+### Defensive alignment
+
+Where the fielders start is part of the situation, not part of the answer, so it
+goes on `state`, not in the overlay:
+
+```ts
+state: { outs: 1, runners: { first: false, second: false, third: true },
+         alignment: 'infield in' }
+```
+
+Options are `'normal'` (the default), `'infield in'`, `'corners in'`, and
+`'double play depth'`. The markers move, and so does anything an overlay points
+at — a throw drawn from `'SS'` with the infield in starts on the grass, not at
+normal depth. Use it whenever the alignment is the reason the answer is what it
+is: "infield in, ground ball to short, where do you throw it?" is a different
+question from the same ground ball at normal depth.

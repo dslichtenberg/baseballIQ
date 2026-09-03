@@ -1,6 +1,13 @@
 import { Fragment } from 'react'
 import type { BallPath, PlayOverlay, Runners } from '../types.ts'
-import { POSITIONS, POSITION_NAMES, ALL_POSITIONS, type Position } from './positions.ts'
+import {
+  fielderSpots,
+  POSITION_NAMES,
+  ALIGNMENT_NAMES,
+  ALL_POSITIONS,
+  type Alignment,
+  type Position,
+} from './positions.ts'
 import type { Pt } from './zones.ts'
 import {
   VIEW,
@@ -25,6 +32,7 @@ import {
   arrowHead,
   shorten,
   refPoint,
+  lineUpSpot,
 } from './geometry.ts'
 import './Field.css'
 
@@ -35,6 +43,8 @@ export interface FieldProps {
   /** Only passed after the answer is revealed. */
   answerOverlay?: PlayOverlay
   outs: 0 | 1 | 2
+  /** How the defense is set up. Moves the infielders; defaults to normal depth. */
+  alignment?: Alignment
   /** The one piece of motion in the app. Reduced-motion users get it instantly. */
   animateOverlay?: boolean
   className?: string
@@ -46,6 +56,7 @@ export function Field({
   youAre,
   answerOverlay,
   outs,
+  alignment = 'normal',
   animateOverlay = true,
   className,
 }: FieldProps) {
@@ -54,7 +65,7 @@ export function Field({
       className={['field', className].filter(Boolean).join(' ')}
       viewBox={`0 0 ${VIEW.w} ${VIEW.h}`}
       role="img"
-      aria-label={describe({ runners, ball, youAre, outs })}
+      aria-label={describe({ runners, ball, youAre, outs, alignment })}
     >
       <Turf />
       <Bases runners={runners} />
@@ -62,9 +73,16 @@ export function Field({
           never be the reason a kid can't read who that fielder is. */}
       {ball ? <BallTrack ball={ball} muted={Boolean(answerOverlay)} /> : null}
       <Runners runners={runners} />
-      <Fielders youAre={youAre} />
+      <Fielders youAre={youAre} alignment={alignment} />
       {/* The answer sits on top of everything. It is the point of the picture. */}
-      {answerOverlay ? <Overlay overlay={answerOverlay} animate={animateOverlay} /> : null}
+      {answerOverlay ? (
+        <Overlay
+          overlay={answerOverlay}
+          ball={ball}
+          alignment={alignment}
+          animate={animateOverlay}
+        />
+      ) : null}
       <Outs outs={outs} />
     </svg>
   )
@@ -124,13 +142,14 @@ function Runners({ runners }: { runners: Runners }) {
   )
 }
 
-function Fielders({ youAre }: { youAre?: Position }) {
+function Fielders({ youAre, alignment }: { youAre?: Position; alignment: Alignment }) {
+  const spots = fielderSpots(alignment)
   return (
     <g aria-hidden="true">
       {ALL_POSITIONS.filter((p) => p !== youAre).map((p) => (
-        <Fielder key={p} pos={p} at={POSITIONS[p]} />
+        <Fielder key={p} pos={p} at={spots[p]} />
       ))}
-      {youAre ? <Fielder pos={youAre} at={POSITIONS[youAre]} you /> : null}
+      {youAre ? <Fielder pos={youAre} at={spots[youAre]} you /> : null}
     </g>
   )
 }
@@ -170,49 +189,114 @@ function BallTrack({ ball, muted }: { ball: BallPath; muted: boolean }) {
   )
 }
 
-function Overlay({ overlay, animate }: { overlay: PlayOverlay; animate: boolean }) {
+function Overlay({
+  overlay,
+  ball,
+  alignment,
+  animate,
+}: {
+  overlay: PlayOverlay
+  ball?: BallPath
+  alignment: Alignment
+  animate: boolean
+}) {
   const cls = animate ? 'f-overlay f-overlay--draw' : 'f-overlay'
+  const at = (ref: Parameters<typeof refPoint>[0]) => refPoint(ref, alignment)
+
   return (
     <g aria-hidden="true" className={cls}>
       {overlay.steps.map((step, i) => {
         const delay = { animationDelay: `${i * 0.35}s` }
+
         if (step.kind === 'touch') {
-          const at = refPoint(step.at)
+          const p = at(step.at)
           return (
             <g key={i} className="f-step f-step--touch" style={delay}>
-              <circle cx={at.x} cy={at.y} r={15} className="f-touch-ring" />
-              <circle cx={at.x} cy={at.y} r={4} className="f-touch-dot" />
+              <circle cx={p.x} cy={p.y} r={15} className="f-touch-ring" />
+              <circle cx={p.x} cy={p.y} r={4} className="f-touch-dot" />
             </g>
           )
         }
-        const from = refPoint(step.from)
-        const raw = refPoint(step.to)
-        // Short hops (a first baseman stepping to the cutoff spot) still need a
-        // readable arrow, so never trim more than a quarter of the run.
-        const gap = Math.min(15, Math.hypot(raw.x - from.x, raw.y - from.y) * 0.25)
-        const tip = shorten(from, raw, gap)
-        const start = shorten(raw, from, gap * 0.85)
 
-        // A thrown ball travels straight. A player runs around whoever is in
-        // the way, so a move curves. That difference is doing real work: it
-        // keeps a "go back up third" arrow from looking like a throw to the
-        // third baseman it happens to pass.
-        const curved = step.kind === 'move'
-        const { d, ctrl } = curved
-          ? bow(start, tip, 0.3)
-          : { d: straight(start, tip), ctrl: start }
+        if (step.kind === 'cut' || step.kind === 'relay') {
+          const source = step.ball ?? ball?.zone
+          // A cut or relay with no ball anywhere is not a play, it is a typo.
+          // The validator rejects it, so this is only the runtime guard.
+          if (!source) return null
+          const base = at(step.to)
+          const spot = lineUpSpot(at(source), base, step.kind)
+          return (
+            <g key={i} className={`f-step f-step--${step.kind}`} style={delay}>
+              <circle cx={spot.x} cy={spot.y} r={13} className="f-spot-ring" />
+              {/* Both legs of the throw, so the spot explains itself: the ball
+                  comes here, and from here it goes on to the base.
+                  The spot sits ON the line by construction, so without a wide
+                  break at that end the two legs render as one straight arrow
+                  and the whole point — the ball stops here — disappears. */}
+              {/* The throw is context; the spot and the run to it are the
+                  answer, so the two legs are drawn back a step. */}
+              <Arrow from={at(source)} to={spot} gap={22} assist />
+              <Arrow from={spot} to={base} gap={22} assist />
+              <Arrow from={at(step.from ?? step.who)} to={spot} curved gap={20} />
+            </g>
+          )
+        }
+
+        const start = at(step.kind === 'move' ? (step.from ?? step.who) : step.from)
+        const end = at(step.to)
 
         return (
           <g key={i} className={`f-step f-step--${step.kind}`} style={delay}>
             {/* "Where do I go" is answered by a spot, not by an arrow that
                 stops in open grass, so a move always marks its destination. */}
-            {curved ? <circle cx={raw.x} cy={raw.y} r={13} className="f-spot-ring" /> : null}
-            <path d={d} className="f-arrow-halo" />
-            <path d={d} className="f-arrow-line" />
-            <path d={arrowHead(tip, ctrl)} className="f-arrow-head" />
+            {step.kind === 'move' ? (
+              <circle cx={end.x} cy={end.y} r={13} className="f-spot-ring" />
+            ) : null}
+            <Arrow from={start} to={end} curved={step.kind === 'move'} />
           </g>
         )
       })}
+    </g>
+  )
+}
+
+/**
+ * A thrown ball travels straight. A player runs around whoever is in the way,
+ * so a move curves. That difference is doing real work: it keeps a "go back up
+ * third" arrow from looking like a throw to the third baseman it happens to
+ * pass.
+ */
+function Arrow({
+  from,
+  to,
+  curved = false,
+  gap: gapOverride,
+  assist = false,
+}: {
+  from: Pt
+  to: Pt
+  curved?: boolean
+  gap?: number
+  assist?: boolean
+}) {
+  // Short hops (a first baseman stepping up to the cut spot) still need a
+  // readable arrow, so never trim more than a quarter of the run.
+  const gap = Math.min(gapOverride ?? 15, Math.hypot(to.x - from.x, to.y - from.y) * 0.25)
+  const tip = shorten(from, to, gap)
+  const start = shorten(to, from, gap * 0.85)
+  const { d, ctrl } = curved
+    ? bow(start, tip, 0.3)
+    : { d: straight(start, tip), ctrl: start }
+
+  const cls = ['f-arrow', curved && 'f-arrow--run', assist && 'f-arrow--assist']
+    .filter(Boolean)
+    .join(' ')
+
+  return (
+    <g className={cls}>
+      <path d={d} className="f-arrow-halo" />
+      <path d={d} className="f-arrow-line" />
+      <path d={arrowHead(tip, ctrl)} className="f-arrow-head" />
     </g>
   )
 }
@@ -246,10 +330,18 @@ const BALL_WORDS: Record<BallPath['type'], string> = {
   bunt: 'bunt',
 }
 
-function describe({ runners, ball, youAre, outs }: Pick<FieldProps, 'runners' | 'ball' | 'youAre' | 'outs'>) {
+function describe({
+  runners,
+  ball,
+  youAre,
+  outs,
+  alignment,
+}: Required<Pick<FieldProps, 'runners' | 'outs' | 'alignment'>> &
+  Pick<FieldProps, 'ball' | 'youAre'>) {
   const on = BASES.filter(({ name }) => runners[name]).map(({ name }) => name)
   const bases = on.length === 0 ? 'bases empty' : `runners on ${list(on)}`
   const parts = [`${outs} ${outs === 1 ? 'out' : 'outs'}`, bases]
+  if (alignment !== 'normal') parts.push(ALIGNMENT_NAMES[alignment])
   if (ball) parts.push(`${BALL_WORDS[ball.type]} to ${ball.zone}`)
   if (youAre) parts.push(`you are the ${POSITION_NAMES[youAre]}`)
   return `Baseball field: ${parts.join(', ')}.`

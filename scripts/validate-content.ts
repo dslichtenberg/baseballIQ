@@ -8,7 +8,7 @@
 
 import { SCENARIOS } from '../src/content/scenarios/index.ts'
 import { isBallZone, isZone, BALL_ZONE_NAMES, ZONE_NAMES } from '../src/field/zones.ts'
-import { isPosition } from '../src/field/positions.ts'
+import { isPosition, isAlignment } from '../src/field/positions.ts'
 import type { Scenario, OverlayStep, FieldRef } from '../src/types.ts'
 
 const errors: string[] = []
@@ -23,13 +23,37 @@ function checkRef(id: string, where: string, ref: FieldRef) {
   fail(id, `${where} "${ref}" is not in the zone lookup table or a fielder position`)
 }
 
-function checkOverlayStep(id: string, i: number, step: OverlayStep) {
+function checkOverlayStep(id: string, i: number, step: OverlayStep, scenarioHasBall: boolean) {
+  const where = `overlay step ${i}`
+
   if (step.kind === 'touch') {
-    checkRef(id, `overlay step ${i} touch target`, step.at)
+    checkRef(id, `${where} touch target`, step.at)
     return
   }
-  checkRef(id, `overlay step ${i} "from"`, step.from)
-  checkRef(id, `overlay step ${i} "to"`, step.to)
+
+  checkRef(id, `${where} "to"`, step.to)
+
+  if (step.kind === 'throw') {
+    checkRef(id, `${where} "from"`, step.from)
+    return
+  }
+
+  // move, cut and relay all name a player; "from" is optional and defaults to
+  // wherever that player starts.
+  if (!isPosition(step.who)) fail(id, `${where} "who" (${step.who}) is not a fielding position`)
+  if (step.from) checkRef(id, `${where} "from"`, step.from)
+
+  if (step.kind === 'cut' || step.kind === 'relay') {
+    // The spot is computed from the ball and the target base, so one of the two
+    // has to exist. Without a ball there is no line to stand on.
+    if (step.ball) {
+      if (!isBallZone(step.ball)) {
+        fail(id, `${where} "ball" (${step.ball}) is not a ball zone in the lookup table`)
+      }
+    } else if (!scenarioHasBall) {
+      fail(id, `${where} is a ${step.kind} with no "ball", and the scenario has no batted ball`)
+    }
+  }
 }
 
 function checkScenario(s: Scenario, seen: Set<string>) {
@@ -70,7 +94,11 @@ function checkScenario(s: Scenario, seen: Set<string>) {
     fail(id, `ball.zone "${s.ball.zone}" is not a ball zone in the lookup table`)
   }
 
-  s.overlay?.steps.forEach((step, i) => checkOverlayStep(id, i, step))
+  if (s.state.alignment && !isAlignment(s.state.alignment)) {
+    fail(id, `alignment "${s.state.alignment}" is not a defensive alignment`)
+  }
+
+  s.overlay?.steps.forEach((step, i) => checkOverlayStep(id, i, step, Boolean(s.ball)))
 }
 
 const seen = new Set<string>()

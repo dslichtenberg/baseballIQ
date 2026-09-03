@@ -49,7 +49,9 @@ export const BALL_ZONES = {
 
   // --- deep, at the fence ---
   'deep left': { x: 77, y: 95 },
+  'deep left center': { x: 137, y: 72 },
   'deep center': { x: 200, y: 64 },
+  'deep right center': { x: 263, y: 72 },
   'deep right': { x: 323, y: 95 },
 
   // --- foul territory ---
@@ -61,17 +63,13 @@ export const BALL_ZONES = {
  * Spots that are not places a ball is hit, but places a player is supposed to
  * go. Overlay steps may target these as well as any ball zone.
  *
- * Each cutoff spot sits on the straight line from that outfielder to home
- * plate, a bit under halfway in, which is where a Little League cutoff man
- * actually stands.
+ * There are deliberately no cutoff or relay spots here. Where a cut man or a
+ * relay man stands depends on where the ball is AND which base the throw is
+ * going to, so a fixed name would be right for one target and wrong for the
+ * others. Those spots are computed instead: see `lineUpSpot` in geometry.ts and
+ * the `cut` and `relay` overlay steps.
  */
 export const PLAY_ZONES = {
-  'cutoff left': { x: 167, y: 248 },
-  // Drawn a touch deeper than the geometric spot. The real cutoff for a throw
-  // home from centre stands just in front of the rubber, and a marker there
-  // lands on top of the pitcher's own marker, which teaches nobody anything.
-  'cutoff center': { x: 200, y: 208 },
-  'cutoff right': { x: 233, y: 248 },
   'backup first': { x: 312, y: 228 },
   // Backing up second means standing just behind the bag, which is nearer than
   // where a blooper drops, so this sits inside "shallow center", not past it.

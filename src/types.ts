@@ -7,9 +7,9 @@
  */
 
 import type { BallZone, ZoneName } from './field/zones.ts'
-import type { Position } from './field/positions.ts'
+import type { Alignment, Position } from './field/positions.ts'
 
-export type { Position } from './field/positions.ts'
+export type { Alignment, Position } from './field/positions.ts'
 export type { BallZone, PlayZone, ZoneName } from './field/zones.ts'
 
 export type Division = 'AAA' | 'Majors'
@@ -25,6 +25,12 @@ export interface Runners {
 export interface GameState {
   outs: 0 | 1 | 2
   runners: Runners
+  /**
+   * How the defense is set up before the pitch. Defaults to normal depth.
+   * "Infield in" is a different question from the same ball at normal depth,
+   * so it belongs to the situation, not to the answer.
+   */
+  alignment?: Alignment
   count?: { balls: 0 | 1 | 2 | 3; strikes: 0 | 1 | 2 }
   inning?: number
   half?: 'top' | 'bottom'
@@ -40,11 +46,40 @@ export interface BallPath {
 /** Anything an overlay step can point at: a named spot, or a fielder. */
 export type FieldRef = ZoneName | Position
 
+/**
+ * Shared by the steps where a named player goes somewhere. `from` defaults to
+ * wherever `who` starts the play, so an author normally writes only `who`.
+ */
+interface PlayerStep {
+  who: Position
+  from?: FieldRef
+  label?: string
+}
+
+/**
+ * Cut and relay are two different jobs, and kids are taught them under two
+ * different words, so they are two different step kinds here.
+ *
+ * Neither one names a place. Both name the ball and the base the throw is going
+ * to, and the diagram works out where to stand — which is the actual coaching
+ * point: get on the line between the ball and where the ball is going. `ball`
+ * defaults to the scenario's own batted ball, so most steps just say who and
+ * where the throw is headed.
+ */
+interface LineUpStep extends PlayerStep {
+  ball?: BallZone
+  to: FieldRef
+}
+
 export type OverlayStep =
   /** A throw. Draws a solid arrow. */
   | { kind: 'throw'; from: FieldRef; to: FieldRef; label?: string }
-  /** A player moving to a spot: cutoff, backup, covering a bag. Dashed arrow. */
-  | { kind: 'move'; who?: Position; from: FieldRef; to: FieldRef; label?: string }
+  /** A player moving to a spot: backup, covering a bag. Dashed curved arrow. */
+  | ({ kind: 'move'; to: FieldRef } & PlayerStep)
+  /** The cut man, set up in front of the base the throw is going to. */
+  | ({ kind: 'cut' } & LineUpStep)
+  /** The relay man, out toward the ball on a ball in the gap or to the fence. */
+  | ({ kind: 'relay' } & LineUpStep)
   /** A base that gets touched, or a runner that gets tagged. Draws a ring. */
   | { kind: 'touch'; at: FieldRef; label?: string }
 

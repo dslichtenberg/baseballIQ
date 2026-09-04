@@ -82,12 +82,12 @@ src/
   screens/               Home, Question (also does feedback and review), Results
   components/            SituationStrip: the little scoreboard
   field/
-    zones.ts             THE ZONE LOOKUP TABLE. Named spots to coordinates.
-    positions.ts         where each fielder stands
-    geometry.ts          field shapes and path builders. Nothing outside
-                         src/field/ imports this.
+    projection.ts        the camera. The only place feet become pixels.
+    zones.ts             THE ZONE LOOKUP TABLE. Named spots to feet and degrees.
+    positions.ts         where each fielder stands, in feet
+    geometry.ts          field shapes, ball flight, path builders. Nothing
+                         outside src/field/ imports this.
     Field.tsx            the one field component, reused everywhere
-    ZoneMap.tsx          every zone name plotted; a reference for authors
   content/scenarios/     the scenario bank (empty until M2)
 scripts/
   validate-content.ts    fails the build on a broken scenario
@@ -190,12 +190,34 @@ is, and the answer sits on top of everything because it is the point.
 the answer; blue marks the other team's runners so they never read as you. The
 spec's five colours had no way to say "this one is you".
 
-**The field is lit rather than flat.** Asked to look closer to a broadcast
-graphic, the turf and the clay each ramp between a far and a near shade, the
-outfield sits a shade darker than the infield, and there is a warning track
-inside the fence. Every addition is a shade of a colour the spec already chose.
-Mow stripes were tried and cut: at phone size they read as a target, and what
-makes these graphics look expensive is restraint, not more decoration.
+**The field is described in feet and put through a camera.** `projection.ts` is
+the only place that turns ground into pixels; everything else — zones,
+fielders, arcs, ball flight — is real distances on real ground. That inversion
+is the whole reason the drawing holds together. The first version placed 2D
+coordinates by hand and it showed: arcs struck from different centres did not
+nest, and base cutouts sat on the basepaths like discs rather than being part
+of them. Describe the field once, project it once, and those cannot happen.
+
+Consequences worth knowing:
+
+- **The camera is behind home and above it, pitched 38 degrees down.** Lower
+  foreshortens harder, but below about 32 the outfield collapses to a sliver
+  with the fielders pressed against the wall. Four settings were compared
+  numerically before picking this one.
+- **Ball flight is real.** A fly ball is a parabola through the air and a
+  ground ball actually bounces, so what tells them apart comes out of the
+  physics instead of being faked with a squiggle. Apex is a share of distance
+  with a ceiling: a fixed height made a short foul fly arc clean out of frame.
+- **Players stand up.** A shadow at their feet and a marker at head height; the
+  gap between the two is the perspective doing the work, so a near player
+  stands taller than an outfielder without anything being tuned.
+- **The outfield wall has a face**, drawn as the fence arc at ground level and
+  the same arc eight feet up. It is the one thing not flat on the ground and it
+  is most of what makes the field read as a place.
+- **The frame is wide and short**, which is what a low camera gives you. That
+  is a gift on a phone: it leaves the vertical space for the question.
+
+Mow stripes were built and cut: at phone size they read as a radar target.
 
 **The answer overlay geometry landed early, in M1 rather than M3.** Only the
 drawing, not the flow around it. The overlay is what proves the coordinates are

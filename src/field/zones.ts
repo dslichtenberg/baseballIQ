@@ -2,70 +2,76 @@
  * The zone lookup table.
  *
  * Scenario authors write zone names in English ("deep left center") and never
- * touch a coordinate. This file is the only place SVG numbers for a *place on
- * the field* live. If a scenario needs a spot that is not here, add it here
- * first.
+ * touch a coordinate. This file is the only place a *place on the field* is
+ * defined, and every entry is written the way a coach would describe it: how
+ * many feet from home, and how many degrees off the line to centre field.
+ * Negative degrees are the left field side.
  *
- * Coordinate system: the field SVG viewBox is 0 0 400 384, home plate at the
- * bottom centre, the outfield toward the top, the foul lines at a true 45
- * degrees. See geometry.ts for the shapes these coordinates sit inside.
+ * That means these are checkable. "195 feet, 18 degrees left" is either the
+ * left-centre gap or it is not; a pair of pixel coordinates is neither.
+ *
+ * Little League reference numbers used throughout: 60 ft between bases, so 84.9
+ * ft from home to second, a 46 ft pitching distance, and a 205 ft fence.
  */
 
-export interface Pt {
-  x: number
-  y: number
-}
+import { polar, type FieldPt } from './projection.ts'
+
+export type { FieldPt } from './projection.ts'
+
+/** Bases are 60 ft apart, so home to second across the diamond is 60 * root 2. */
+export const BASE_FT = 60
+export const HOME_TO_SECOND_FT = BASE_FT * Math.SQRT2
+export const PITCHING_FT = 46
+export const FENCE_FT = 205
 
 /**
  * Zones a batted ball can be hit to. `BallPath.zone` must be one of these.
  *
- * The outfield zones sit on three arcs struck from home plate: shallow (a
- * blooper just past the infielders), normal (where the outfielders are
- * standing), and deep (on the warning track).
+ * The outfield sits on three arcs: shallow (a blooper just past the infield),
+ * normal (where the outfielders stand), and deep (on the warning track).
  */
 export const BALL_ZONES = {
   // --- infield ---
-  home: { x: 200, y: 326 },
-  'in front of plate': { x: 200, y: 298 },
-  mound: { x: 200, y: 244 },
-  first: { x: 276, y: 250 },
-  second: { x: 200, y: 174 },
-  third: { x: 124, y: 250 },
-  'shortstop hole': { x: 150, y: 212 },
-  '3-4 hole': { x: 250, y: 212 },
-  'up the middle': { x: 200, y: 196 },
+  home: polar(0, 0),
+  'in front of plate': polar(18, 0),
+  mound: polar(PITCHING_FT, 0),
+  first: polar(BASE_FT, 45),
+  second: polar(HOME_TO_SECOND_FT, 0),
+  third: polar(BASE_FT, -45),
+  'shortstop hole': polar(95, -32),
+  '3-4 hole': polar(95, 32),
+  'up the middle': polar(120, 0),
 
   // --- shallow outfield: bloopers and short flies ---
-  'shallow left': { x: 113, y: 162 },
-  'shallow center': { x: 200, y: 140 },
-  'shallow right': { x: 287, y: 162 },
+  'shallow left': polar(135, -30),
+  'shallow center': polar(140, 0),
+  'shallow right': polar(135, 30),
 
   // --- normal outfield depth ---
-  left: { x: 96, y: 128 },
-  'left center': { x: 145, y: 107 },
-  center: { x: 200, y: 100 },
-  'right center': { x: 255, y: 107 },
-  right: { x: 304, y: 128 },
+  left: polar(165, -32),
+  'left center': polar(172, -15),
+  center: polar(175, 0),
+  'right center': polar(172, 15),
+  right: polar(165, 32),
 
   // --- deep, at the fence ---
-  'deep left': { x: 77, y: 95 },
-  'deep left center': { x: 137, y: 72 },
-  'deep center': { x: 200, y: 64 },
-  'deep right center': { x: 263, y: 72 },
-  'deep right': { x: 323, y: 95 },
+  'deep left': polar(190, -38),
+  'deep left center': polar(195, -18),
+  'deep center': polar(197, 0),
+  'deep right center': polar(195, 18),
+  'deep right': polar(190, 38),
 
   // --- fair, but down the line in the outfield corner ---
-  // Distinct from the foul zones below, and the distinction matters: a ball
-  // slicing toward the line that an outfielder has to cut off is FAIR. Sending
-  // one of those to "foul right" draws an obviously foul ball and makes the
-  // question look broken.
-  'left field corner': { x: 44, y: 158 },
-  'right field corner': { x: 356, y: 158 },
+  // A ball slicing toward the line that an outfielder has to cut off is FAIR.
+  // Sending one of those to a foul zone draws an obviously foul ball and makes
+  // the question look broken, which is exactly what happened once.
+  'left field corner': polar(195, -42),
+  'right field corner': polar(195, 42),
 
-  // --- foul territory ---
-  'foul left': { x: 86, y: 280 },
-  'foul right': { x: 314, y: 280 },
-} as const satisfies Record<string, Pt>
+  // --- foul territory: past 45 degrees ---
+  'foul left': polar(85, -62),
+  'foul right': polar(85, 62),
+} as const satisfies Record<string, FieldPt>
 
 /**
  * Spots that are not places a ball is hit, but places a player is supposed to
@@ -74,17 +80,14 @@ export const BALL_ZONES = {
  * There are deliberately no cutoff or relay spots here. Where a cut man or a
  * relay man stands depends on where the ball is AND which base the throw is
  * going to, so a fixed name would be right for one target and wrong for the
- * others. Those spots are computed instead: see `lineUpSpot` in geometry.ts and
- * the `cut` and `relay` overlay steps.
+ * others. Those are computed: see `lineUpSpot` in geometry.ts.
  */
 export const PLAY_ZONES = {
-  'backup first': { x: 312, y: 228 },
-  // Backing up second means standing just behind the bag, which is nearer than
-  // where a blooper drops, so this sits inside "shallow center", not past it.
-  'backup second': { x: 200, y: 152 },
-  'backup third': { x: 88, y: 228 },
-  'backup home': { x: 200, y: 370 },
-} as const satisfies Record<string, Pt>
+  'backup first': polar(84, 52),
+  'backup second': polar(112, 0),
+  'backup third': polar(84, -52),
+  'backup home': polar(30, 180),
+} as const satisfies Record<string, FieldPt>
 
 export const ZONES = { ...BALL_ZONES, ...PLAY_ZONES }
 

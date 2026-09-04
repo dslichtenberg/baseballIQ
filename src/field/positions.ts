@@ -1,4 +1,4 @@
-import type { Pt } from './zones.ts'
+import { polar, type FieldPt } from './projection.ts'
 
 export type Position = 'P' | 'C' | '1B' | '2B' | '3B' | 'SS' | 'LF' | 'CF' | 'RF'
 
@@ -14,60 +14,55 @@ export type Position = 'P' | 'C' | '1B' | '2B' | '3B' | 'SS' | 'LF' | 'CF' | 'RF
 export type Alignment = 'normal' | 'infield in' | 'corners in' | 'double play depth'
 
 /**
- * Where each fielder starts the play at normal depth.
- *
- * Little League depth, not MLB: the outfielders play shallow because nobody at
- * this age can throw from the fence. The infielders are spaced far enough apart
- * that two markers plus the "you" ring never overlap.
+ * Where each fielder stands at normal depth, in feet from home and degrees off
+ * the centre line. Little League depth, not MLB: the outfielders play shallow
+ * because nobody at this age can throw from the fence.
  */
 export const POSITIONS = {
-  P: { x: 200, y: 238 },
-  C: { x: 200, y: 352 },
-  '1B': { x: 255, y: 226 },
-  '2B': { x: 240, y: 196 },
-  '3B': { x: 145, y: 226 },
-  SS: { x: 160, y: 196 },
-  LF: { x: 112, y: 120 },
-  CF: { x: 200, y: 88 },
-  RF: { x: 288, y: 120 },
-} as const satisfies Record<Position, Pt>
+  P: polar(50, 0),
+  C: polar(16, 180),
+  '1B': polar(72, 36),
+  '2B': polar(115, 22),
+  '3B': polar(70, -38),
+  SS: polar(115, -22),
+  LF: polar(142, -30),
+  CF: polar(148, 0),
+  RF: polar(142, 30),
+} as const satisfies Record<Position, FieldPt>
 
 /**
  * What each alignment changes. Anything not listed stays at normal depth.
  *
- * Infield in: all four infielders move onto the grass in front of the bases, so
- * a ground ball can be thrown home in time. Corners in: only the corners come
- * up, which is the bunt and squeeze look. Double play depth: the middle
- * infielders take a step in and a step toward second to turn two.
+ * Infield in: all four move onto the grass in front of the bases so a ground
+ * ball can be thrown home in time. Corners in: only the corners come up, the
+ * bunt and squeeze look. Double play depth: the middle infielders take a step
+ * in and a step toward second to turn two.
  */
-const ALIGNMENT_SHIFTS: Record<Alignment, Partial<Record<Position, Pt>>> = {
+const ALIGNMENT_SHIFTS: Record<Alignment, Partial<Record<Position, FieldPt>>> = {
   normal: {},
   'infield in': {
-    // The corners come right up onto the line; the middle infielders come to
-    // about mound depth. Spread far enough apart that neither one collides
-    // with the pitcher's marker or with a runner standing on the bag.
-    '1B': { x: 246, y: 278 },
-    '2B': { x: 236, y: 250 },
-    '3B': { x: 154, y: 278 },
-    SS: { x: 164, y: 250 },
+    '1B': polar(52, 40),
+    '2B': polar(80, 26),
+    '3B': polar(52, -40),
+    SS: polar(80, -26),
   },
   'corners in': {
-    '1B': { x: 246, y: 278 },
-    '3B': { x: 154, y: 278 },
+    '1B': polar(52, 40),
+    '3B': polar(52, -40),
   },
   'double play depth': {
-    '2B': { x: 232, y: 192 },
-    SS: { x: 168, y: 192 },
+    '2B': polar(104, 20),
+    SS: polar(104, -20),
   },
 }
 
 /** Where every fielder stands under a given alignment. */
-export function fielderSpots(alignment: Alignment = 'normal'): Record<Position, Pt> {
+export function fielderSpots(alignment: Alignment = 'normal'): Record<Position, FieldPt> {
   return { ...POSITIONS, ...ALIGNMENT_SHIFTS[alignment] }
 }
 
 /** Where one fielder stands under a given alignment. */
-export function fielderSpot(pos: Position, alignment: Alignment = 'normal'): Pt {
+export function fielderSpot(pos: Position, alignment: Alignment = 'normal'): FieldPt {
   return ALIGNMENT_SHIFTS[alignment][pos] ?? POSITIONS[pos]
 }
 

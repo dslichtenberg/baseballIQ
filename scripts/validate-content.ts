@@ -9,7 +9,9 @@
 import { SCENARIOS } from '../src/content/scenarios/index.ts'
 import { isBallZone, isZone, BALL_ZONE_NAMES, ZONE_NAMES } from '../src/field/zones.ts'
 import { isPosition, isAlignment } from '../src/field/positions.ts'
-import { refPoint, lineUpSpot } from '../src/field/geometry.ts'
+import { refFt, lineUpSpot } from '../src/field/geometry.ts'
+import { isFair, distanceFt, type FieldPt } from '../src/field/projection.ts'
+import { FENCE_FT } from '../src/field/zones.ts'
 import type { Scenario, OverlayStep, FieldRef } from '../src/types.ts'
 
 const errors: string[] = []
@@ -158,25 +160,27 @@ function checkScenario(s: Scenario, seen: Set<string>) {
 function checkOverlayDraws(s: Scenario) {
   const id = s.id || '<missing id>'
   const alignment = s.state.alignment ?? 'normal'
-  const finite = (p: { x: number; y: number }) => Number.isFinite(p.x) && Number.isFinite(p.y)
-  const apart = (a: { x: number; y: number }, b: { x: number; y: number }) =>
-    Math.hypot(a.x - b.x, a.y - b.y)
+  const finite = (p: FieldPt) => Number.isFinite(p.fx) && Number.isFinite(p.fy)
+  const apartFt = (a: FieldPt, b: FieldPt) => Math.hypot(a.fx - b.fx, a.fy - b.fy)
 
   s.overlay?.steps.forEach((step, i) => {
     const where = `overlay step ${i}`
     try {
       if (step.kind === 'touch') {
-        if (!finite(refPoint(step.at, alignment))) fail(id, `${where} touch point is not on the field`)
+        if (!finite(refFt(step.at, alignment))) fail(id, `${where} touch point is not on the field`)
         return
       }
 
       if (step.kind === 'cut' || step.kind === 'relay') {
         const source = step.ball ?? s.ball?.zone
         if (!source) return // already reported
-        const ball = refPoint(source, alignment)
-        const base = refPoint(step.to, alignment)
-        if (apart(ball, base) < 20) {
-          fail(id, `${where} is a ${step.kind} from "${source}" to "${step.to}", which are the same place`)
+        const ball = refFt(source, alignment)
+        const base = refFt(step.to, alignment)
+        if (apartFt(ball, base) < 15) {
+          fail(
+            id,
+            `${where} is a ${step.kind} from "${source}" to "${step.to}", which are the same place`,
+          )
           return
         }
         const spot = lineUpSpot(ball, base, step.kind)
@@ -184,11 +188,11 @@ function checkOverlayDraws(s: Scenario) {
         return
       }
 
-      const from = refPoint(step.kind === 'move' ? (step.from ?? step.who) : step.from, alignment)
-      const to = refPoint(step.to, alignment)
+      const from = refFt(step.kind === 'move' ? (step.from ?? step.who) : step.from, alignment)
+      const to = refFt(step.to, alignment)
       if (!finite(from) || !finite(to)) {
         fail(id, `${where} does not resolve to points on the field`)
-      } else if (apart(from, to) < 12) {
+      } else if (apartFt(from, to) < 10) {
         fail(id, `${where} draws an arrow from a spot to itself; there is nothing to show`)
       }
     } catch (e) {
@@ -206,23 +210,22 @@ function checkOverlayDraws(s: Scenario) {
  * obviously foul ball: the name was wrong, not the drawing.
  */
 function checkZoneTable() {
-  // Home is at (200, 326) and the foul lines run out at 45 degrees, so fair
-  // territory is everything inside both of them.
-  const isFair = (p: { x: number; y: number }) => p.x + p.y <= 526 && p.y - p.x <= 126
-  const insideFence = (p: { x: number; y: number }) =>
-    Math.hypot(p.x - 200, p.y - 202.2) <= 176.2
-
   for (const name of BALL_ZONE_NAMES) {
-    const p = refPoint(name)
+    const p = refFt(name)
     const shouldBeFoul = name.startsWith('foul ')
+
     if (shouldBeFoul && isFair(p)) {
       errors.push(`zone table: "${name}" is named foul but sits in fair territory`)
     }
     if (!shouldBeFoul && !isFair(p)) {
       errors.push(`zone table: "${name}" sits in foul territory but is not named "foul ..."`)
     }
-    if (!insideFence(p)) {
-      errors.push(`zone table: "${name}" is outside the fence, so a ball cannot land there`)
+
+    const ft = distanceFt(p)
+    if (ft > FENCE_FT) {
+      errors.push(
+        `zone table: "${name}" is ${Math.round(ft)} ft from home, past the ${FENCE_FT} ft fence`,
+      )
     }
   }
 }

@@ -23,7 +23,11 @@
   --dirt-far: #83432a;
   --dirt-near: #9a5636;
   /* Warning track: greyer and drier than the infield clay, the way it looks. */
-  --track: #7d5a45;
+  --track: #6f513e;
+  /* The outfield wall, lit from above: a face in shadow and a lip that catches. */
+  --wall-face: #2a3a30;
+  --wall-top: #3d5344;
+  --wall-lip: #7d8f80;
   --grass: #2e5e3a;
   /*
    * The field is lit, so it is not one flat green. --grass-far is the back of

@@ -1,88 +1,154 @@
 /**
- * Every number that describes the shape of the field, and the path builders
- * that turn two points into something a kid can read at a glance.
+ * The shapes of the field and the paths drawn on it, all built from field-space
+ * feet and put through the camera in projection.ts.
  *
  * Nothing outside src/field/ should import from here. Scenario content talks in
  * zone names (see zones.ts); components talk in props.
- *
- * A note on proportions: this is a diagram, not a survey. The infield is drawn
- * larger than a scale drawing would put it, because that is where nearly every
- * question in this app happens. The dirt is drawn as basepaths plus base
- * cutouts rather than as a filled skin, which is what keeps the outfield
- * readable as its own open space.
  */
 
-import { ZONES, type Pt, type ZoneName } from './zones.ts'
+import {
+  project,
+  polar,
+  arcPoints,
+  polyline,
+  wedge,
+  band,
+  depthScale,
+  distanceFt,
+  type FieldPt,
+  type Pt,
+} from './projection.ts'
+import {
+  ZONES,
+  BASE_FT,
+  HOME_TO_SECOND_FT,
+  PITCHING_FT,
+  FENCE_FT,
+  type ZoneName,
+} from './zones.ts'
 import { fielderSpot, isPosition, type Alignment, type Position } from './positions.ts'
 
-export const VIEW = { w: 400, h: 384 }
+export { VIEW } from './projection.ts'
+export type { Pt } from './projection.ts'
 
-export const HOME: Pt = { x: 200, y: 326 }
-export const FIRST: Pt = { x: 276, y: 250 }
-export const SECOND: Pt = { x: 200, y: 174 }
-export const THIRD: Pt = { x: 124, y: 250 }
+// ---------------------------------------------------------------------------
+// The field, in feet
+// ---------------------------------------------------------------------------
 
-/** Little League puts the rubber 46 ft along an 84.9 ft home-to-second line. */
-export const MOUND: Pt = { x: 200, y: 244 }
+/** Foul lines run at 45 degrees, so fair territory is this fan. */
+const FOUL = 45
 
-/** Where the foul lines leave the drawing. Both sit on a true 45 degree line. */
-export const FOUL_POLE_L: Pt = { x: 30, y: 156 }
-export const FOUL_POLE_R: Pt = { x: 370, y: 156 }
+/** Where the infield grass ends and the outfield begins. */
+const MOW_FT = 128
+/** The dirt strip that tells an outfielder the wall is close. */
+const TRACK_FT = 192
+/** How tall the outfield wall is. Gives the fence a face you can see. */
+const WALL_FT = 8
 
-/** Circle through both foul poles and straightaway center. */
-export const FENCE = { cx: 200, cy: 202.2, r: 176.2 }
+export const HOME_FT: FieldPt = { fx: 0, fy: 0 }
+export const FIRST_FT = polar(BASE_FT, 45)
+export const SECOND_FT = polar(HOME_TO_SECOND_FT, 0)
+export const THIRD_FT = polar(BASE_FT, -45)
+export const MOUND_FT = polar(PITCHING_FT, 0)
 
-/** Where the outfield grass begins, as an arc struck from home plate. */
-const MOW = { r: 168 }
-const MOW_L: Pt = { x: 81.2, y: 207.2 }
-const MOW_R: Pt = { x: 318.8, y: 207.2 }
-
-/** Fair territory: home, out the left line, around the fence, back down the right line. */
-export const FAIR_PATH =
-  `M ${HOME.x} ${HOME.y} L ${FOUL_POLE_L.x} ${FOUL_POLE_L.y}` +
-  ` A ${FENCE.r} ${FENCE.r} 0 0 1 ${FOUL_POLE_R.x} ${FOUL_POLE_R.y} Z`
-
-/** The outfield grass, one shade off the infield grass, the way a mow line reads. */
-export const OUTFIELD_GRASS_PATH =
-  `M ${MOW_L.x} ${MOW_L.y}` +
-  ` A ${MOW.r} ${MOW.r} 0 0 1 ${MOW_R.x} ${MOW_R.y}` +
-  ` L ${FOUL_POLE_R.x} ${FOUL_POLE_R.y}` +
-  ` A ${FENCE.r} ${FENCE.r} 0 0 0 ${FOUL_POLE_L.x} ${FOUL_POLE_L.y} Z`
-
-export const FENCE_PATH =
-  `M ${FOUL_POLE_L.x} ${FOUL_POLE_L.y}` +
-  ` A ${FENCE.r} ${FENCE.r} 0 0 1 ${FOUL_POLE_R.x} ${FOUL_POLE_R.y}`
-
-/** Stroked thick in dirt to make the basepaths. */
-export const BASEPATH_PATH =
-  `M ${HOME.x} ${HOME.y} L ${FIRST.x} ${FIRST.y} L ${SECOND.x} ${SECOND.y}` +
-  ` L ${THIRD.x} ${THIRD.y} Z`
-
-export const BASEPATH_WIDTH = 17
-export const BASE_CUTOUT_R = 17
-export const HOME_CIRCLE_R = 27
-export const MOUND_R = 17
-
-/** The dirt strip inside the fence that tells an outfielder the wall is close. */
-export const WARNING_TRACK_WIDTH = 7
-
-export const FOUL_LINE_R = `M ${HOME.x} ${HOME.y} L ${FOUL_POLE_R.x} ${FOUL_POLE_R.y}`
-export const FOUL_LINE_L = `M ${HOME.x} ${HOME.y} L ${FOUL_POLE_L.x} ${FOUL_POLE_L.y}`
-
-/** Home plate, pointing down toward the catcher, the way a real plate does. */
-export const HOME_PLATE_PATH = polygon([
-  { x: HOME.x - 9, y: HOME.y - 8 },
-  { x: HOME.x + 9, y: HOME.y - 8 },
-  { x: HOME.x + 9, y: HOME.y + 2 },
-  { x: HOME.x, y: HOME.y + 11 },
-  { x: HOME.x - 9, y: HOME.y + 2 },
-])
-
-export const BASES: { name: 'first' | 'second' | 'third'; at: Pt }[] = [
-  { name: 'first', at: FIRST },
-  { name: 'second', at: SECOND },
-  { name: 'third', at: THIRD },
+export const BASES: { name: 'first' | 'second' | 'third'; at: FieldPt }[] = [
+  { name: 'first', at: FIRST_FT },
+  { name: 'second', at: SECOND_FT },
+  { name: 'third', at: THIRD_FT },
 ]
+
+// --- turf ------------------------------------------------------------------
+
+/** All of fair territory, home plate out to the fence. */
+export const FAIR_PATH = wedge(FENCE_FT, -FOUL, FOUL)
+
+/** Infield grass: the fan inside the mow line. */
+export const INFIELD_PATH = wedge(MOW_FT, -FOUL, FOUL)
+
+/** Outfield grass: mow line to the warning track. */
+export const OUTFIELD_PATH = band(MOW_FT, TRACK_FT, -FOUL, FOUL)
+
+/** Warning track: track edge to the wall. */
+export const TRACK_PATH = band(TRACK_FT, FENCE_FT, -FOUL, FOUL)
+
+/**
+ * The face of the outfield wall: the fence at ground level and the same arc
+ * eight feet up, joined into a band. This is the one thing in the drawing that
+ * is not flat on the ground, and it is most of what makes the field read as a
+ * place rather than a diagram.
+ */
+export const WALL_PATH = polyline(
+  [
+    ...arcPoints(FENCE_FT, -FOUL, FOUL),
+    ...arcPoints(FENCE_FT, FOUL, -FOUL).map((_, i, all) =>
+      project(polar(FENCE_FT, FOUL - ((FOUL * 2) / (all.length - 1)) * i), WALL_FT),
+    ),
+  ],
+  true,
+)
+
+/** The top edge of the wall, picked out so the wall has a lip. */
+export const WALL_TOP_PATH = polyline(
+  arcPoints(FENCE_FT, -FOUL, FOUL).map((_, i, all) =>
+    project(polar(FENCE_FT, -FOUL + ((FOUL * 2) / (all.length - 1)) * i), WALL_FT),
+  ),
+)
+
+export const FOUL_LINE_L = polyline([project(HOME_FT), project(polar(FENCE_FT, -FOUL))])
+export const FOUL_LINE_R = polyline([project(HOME_FT), project(polar(FENCE_FT, FOUL))])
+
+// --- dirt ------------------------------------------------------------------
+
+/**
+ * The basepaths as one stroked diamond with round joins, so the corners at each
+ * base are part of the path instead of separate discs sitting on top of it.
+ * Drawing them as circles was what made the old field look assembled rather
+ * than built.
+ */
+export const BASEPATH_PATH = polyline(
+  [project(HOME_FT), project(FIRST_FT), project(SECOND_FT), project(THIRD_FT)],
+  true,
+)
+
+/** Home plate's dirt, and the mound. Both are real circles on real ground. */
+export const HOME_CIRCLE_PATH = polyline(circleFt(HOME_FT, 13), true)
+export const MOUND_PATH = polyline(circleFt(MOUND_FT, 9), true)
+
+/** Home plate itself, pointing back at the catcher the way a real plate does. */
+export const HOME_PLATE_PATH = polyline(
+  [
+    project({ fx: -1.4, fy: 1.4 }),
+    project({ fx: 1.4, fy: 1.4 }),
+    project({ fx: 1.4, fy: -0.7 }),
+    project({ fx: 0, fy: -2.1 }),
+    project({ fx: -1.4, fy: -0.7 }),
+  ],
+  true,
+)
+
+/** A base, drawn well over life size so it is findable on a phone. */
+export function basePath(at: FieldPt): string {
+  const r = 4.5
+  return polyline(
+    [
+      project({ fx: at.fx, fy: at.fy + r }),
+      project({ fx: at.fx + r, fy: at.fy }),
+      project({ fx: at.fx, fy: at.fy - r }),
+      project({ fx: at.fx - r, fy: at.fy }),
+    ],
+    true,
+  )
+}
+
+function circleFt(centre: FieldPt, radiusFt: number, steps = 40): Pt[] {
+  return Array.from({ length: steps + 1 }, (_, i) => {
+    const a = (i / steps) * Math.PI * 2
+    return project({
+      fx: centre.fx + radiusFt * Math.sin(a),
+      fy: centre.fy + radiusFt * Math.cos(a),
+    })
+  })
+}
 
 // ---------------------------------------------------------------------------
 // Point resolution
@@ -91,64 +157,114 @@ export const BASES: { name: 'first' | 'second' | 'third'; at: Pt }[] = [
 /** Anything a ball, a throw, or a fielder's job can point at. */
 export type FieldRef = ZoneName | Position
 
-/**
- * A position resolves to where that fielder is actually standing, which the
- * alignment can change. A throw drawn from the shortstop with the infield in
- * has to start on the grass, not at normal depth.
- */
-export function refPoint(ref: FieldRef, alignment: Alignment = 'normal'): Pt {
+/** Where the thing is, in feet. Alignment can move a fielder. */
+export function refFt(ref: FieldRef, alignment: Alignment = 'normal'): FieldPt {
   if (isPosition(ref)) return fielderSpot(ref, alignment)
   return ZONES[ref]
 }
 
-// ---------------------------------------------------------------------------
-// Path builders
-// ---------------------------------------------------------------------------
-
-export function polygon(pts: Pt[]): string {
-  return pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${round(p.x)} ${round(p.y)}`).join(' ') + ' Z'
+/** Where the thing is on screen. */
+export function refPoint(ref: FieldRef, alignment: Alignment = 'normal'): Pt {
+  return project(refFt(ref, alignment))
 }
 
-/** A rotated square, for a base. */
-export function baseDiamond(at: Pt, r = 8): string {
-  return polygon([
-    { x: at.x, y: at.y - r },
-    { x: at.x + r, y: at.y },
-    { x: at.x, y: at.y + r },
-    { x: at.x - r, y: at.y },
-  ])
+/** How tall a person is drawn here: a marker floats at head height. */
+export const STANDING_FT = 5.5
+
+export { project, depthScale, distanceFt, polar }
+
+// ---------------------------------------------------------------------------
+// Ball flight
+// ---------------------------------------------------------------------------
+
+/**
+ * How high each kind of batted ball gets, as a share of how far it travels,
+ * with a ceiling in feet.
+ *
+ * Proportional, not fixed: a fixed 42 ft apex made a short foul fly arc clean
+ * out of the frame, because 42 ft over 85 ft of ground is almost vertical. A
+ * pop up is the exception and really does go nearly straight up, so its share
+ * is high and its cap is what holds it in.
+ */
+const FLIGHT: Record<string, { share: number; capFt: number }> = {
+  ground: { share: 0.02, capFt: 3 },
+  bunt: { share: 0.02, capFt: 1.5 },
+  line: { share: 0.06, capFt: 12 },
+  fly: { share: 0.28, capFt: 55 },
+  popup: { share: 0.85, capFt: 75 },
 }
+
+/**
+ * The actual flight of the ball through the air, projected.
+ *
+ * A fly ball is a real parabola and a ground ball really bounces, so the shapes
+ * that tell them apart come out of the physics rather than being drawn on. In a
+ * flat overhead diagram the ball's type had to be faked with a squiggle; from
+ * this camera it can just be true.
+ */
+export function ballPath(type: string, to: FieldPt, steps = 48): string {
+  const flight = FLIGHT[type] ?? FLIGHT.line
+  const apex = Math.min(distanceFt(to) * flight.share, flight.capFt)
+  const rolling = type === 'ground' || type === 'bunt'
+  const pts: Pt[] = []
+
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps
+    const at: FieldPt = { fx: to.fx * t, fy: to.fy * t }
+    pts.push(project(at, rolling ? bounceHeight(t, apex) : apex * 4 * t * (1 - t)))
+  }
+  return polyline(pts)
+}
+
+/** Decaying bounces: each hop lower and closer than the one before. */
+function bounceHeight(t: number, apex: number): number {
+  const hops = 4
+  const phase = (t * hops) % 1
+  const decay = Math.pow(0.55, Math.floor(t * hops))
+  return apex * decay * Math.sin(phase * Math.PI)
+}
+
+// ---------------------------------------------------------------------------
+// Cut and relay
+// ---------------------------------------------------------------------------
+
+/**
+ * Where a cut man or a relay man stands.
+ *
+ * Both jobs are the same idea — get on the line between the ball and the base
+ * the throw is going to — and they differ only in how far along that line you
+ * go. The spot is computed from the play, so it is right for any ball and any
+ * target instead of only the one a fixed name happened to assume.
+ *
+ * Now that the field is in feet, these are real distances rather than numbers
+ * tuned against a drawing: a cut man sets up 35 ft in front of the bag, and a
+ * relay man goes out until the outfielder has a 70 ft throw.
+ */
+const CUT_FROM_BASE_FT = 35
+const RELAY_FROM_BALL_FT = 70
+
+export function lineUpSpot(ball: FieldPt, base: FieldPt, role: 'cut' | 'relay'): FieldPt {
+  const len = Math.hypot(base.fx - ball.fx, base.fy - ball.fy) || 1
+  // Both are held back from the midpoint, so a short throw can never put one
+  // player on top of the other or past the person throwing to them.
+  const t =
+    role === 'cut'
+      ? 1 - Math.min(CUT_FROM_BASE_FT / len, 0.5)
+      : Math.min(0.55, RELAY_FROM_BALL_FT / len)
+  return {
+    fx: ball.fx + (base.fx - ball.fx) * t,
+    fy: ball.fy + (base.fy - ball.fy) * t,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen-space helpers, for arrows drawn between two projected points
+// ---------------------------------------------------------------------------
 
 export function straight(a: Pt, b: Pt): string {
-  return `M ${round(a.x)} ${round(a.y)} L ${round(b.x)} ${round(b.y)}`
+  return `M ${a.x} ${a.y} L ${b.x} ${b.y}`
 }
 
-/**
- * A chain of half-circle hops from a to b. Seen from above, a rolling ball
- * cannot be drawn as a bouncing arc, so the scallop carries that meaning
- * instead: this is the shape for every ground ball and every bunt.
- */
-export function scallop(a: Pt, b: Pt, hop = 24): string {
-  const dx = b.x - a.x
-  const dy = b.y - a.y
-  const len = Math.hypot(dx, dy)
-  if (len < 1) return straight(a, b)
-  const hops = Math.max(2, Math.round(len / hop))
-  // Radius wider than half the step flattens each hop, so the line reads as a
-  // ball wobbling along the ground rather than as a coil.
-  const r = (len / hops) * 0.8
-  let d = `M ${round(a.x)} ${round(a.y)}`
-  for (let i = 1; i <= hops; i++) {
-    const t = i / hops
-    d += ` A ${round(r)} ${round(r)} 0 0 1 ${round(a.x + dx * t)} ${round(a.y + dy * t)}`
-  }
-  return d
-}
-
-/**
- * A bowed curve from a to b. Fly balls and pop ups get this; the deeper the
- * bow, the higher the ball went, so a pop up bows much harder than a fly.
- */
 export function bow(a: Pt, b: Pt, amount = 0.2): { d: string; ctrl: Pt } {
   const dx = b.x - a.x
   const dy = b.y - a.y
@@ -157,77 +273,29 @@ export function bow(a: Pt, b: Pt, amount = 0.2): { d: string; ctrl: Pt } {
     x: (a.x + b.x) / 2 + (-dy / len) * len * amount,
     y: (a.y + b.y) / 2 + (dx / len) * len * amount,
   }
-  return {
-    d: `M ${round(a.x)} ${round(a.y)} Q ${round(ctrl.x)} ${round(ctrl.y)} ${round(b.x)} ${round(b.y)}`,
-    ctrl,
-  }
+  return { d: `M ${a.x} ${a.y} Q ${ctrl.x} ${ctrl.y} ${b.x} ${b.y}`, ctrl }
 }
 
 /** An arrowhead sitting at `tip`, pointing away from `from`. */
-export function arrowHead(tip: Pt, from: Pt, size = 10): string {
+export function arrowHead(tip: Pt, from: Pt, size = 9): string {
   const angle = Math.atan2(tip.y - from.y, tip.x - from.x)
   const wing = 0.42
-  return polygon([
-    tip,
-    { x: tip.x - size * Math.cos(angle - wing), y: tip.y - size * Math.sin(angle - wing) },
-    { x: tip.x - size * 0.55 * Math.cos(angle), y: tip.y - size * 0.55 * Math.sin(angle) },
-    { x: tip.x - size * Math.cos(angle + wing), y: tip.y - size * Math.sin(angle + wing) },
-  ])
+  return polyline(
+    [
+      tip,
+      { x: tip.x - size * Math.cos(angle - wing), y: tip.y - size * Math.sin(angle - wing) },
+      { x: tip.x - size * 0.55 * Math.cos(angle), y: tip.y - size * 0.55 * Math.sin(angle) },
+      { x: tip.x - size * Math.cos(angle + wing), y: tip.y - size * Math.sin(angle + wing) },
+    ],
+    true,
+  )
 }
 
-/**
- * Where a cut man or a relay man stands.
- *
- * Both jobs are the same idea — get on the line between the ball and the base
- * the throw is going to — and they differ only in how far along that line you
- * go. So the spot is computed from the play rather than looked up, which means
- * it is right for any ball and any target instead of only for the one target
- * a fixed name happened to assume.
- *
- * A **cut man** sets up a set distance in front of the base, wherever the ball
- * is. A **relay man** runs out toward the ball and takes a short throw.
- */
-
-/**
- * Both distances are set from the ball or the base rather than as a share of
- * the throw, because the job is physical: the cut man sets up a set distance in
- * front of the bag, and the relay man goes out until the outfielder has a short
- * throw. A share of the line would put the relay man on the fence for a long
- * throw and in the infield for a short one.
- *
- * Note this drawing is not to a single scale — the infield is drawn oversized,
- * so a unit is about 1.8 units per foot near the bases and about 1.4 out in the
- * outfield. Each constant below is calibrated in the part of the field it
- * actually applies to.
- */
-
-/** ~35 ft in front of the base. Short, because a 60 ft diamond is short. */
-const CUT_FROM_BASE = 62
-
-/** ~70 ft off the ball: one easy outfielder throw, which lands in shallow outfield. */
-const RELAY_FROM_BALL = 96
-
-export function lineUpSpot(ball: Pt, base: Pt, role: 'cut' | 'relay'): Pt {
-  const len = Math.hypot(base.x - ball.x, base.y - ball.y) || 1
-  // Fraction of the way from the ball toward the base. Both roles are held back
-  // from the midpoint so a short throw can never put one player on top of the
-  // other, or past the person throwing to them.
-  const t =
-    role === 'cut'
-      ? 1 - Math.min(CUT_FROM_BASE / len, 0.5)
-      : Math.min(0.55, RELAY_FROM_BALL / len)
-  return { x: ball.x + (base.x - ball.x) * t, y: ball.y + (base.y - ball.y) * t }
-}
-
-/** Pull a line back from its endpoint so the arrowhead is not sitting on the base. */
+/** Pull a line back from its endpoint so the arrowhead is not on top of the base. */
 export function shorten(a: Pt, b: Pt, by: number): Pt {
   const dx = b.x - a.x
   const dy = b.y - a.y
   const len = Math.hypot(dx, dy) || 1
   const t = Math.max(0, (len - by) / len)
   return { x: a.x + dx * t, y: a.y + dy * t }
-}
-
-function round(n: number): number {
-  return Math.round(n * 10) / 10
 }

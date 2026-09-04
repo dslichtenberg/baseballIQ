@@ -8,32 +8,36 @@ import {
   type Alignment,
   type Position,
 } from './positions.ts'
-import type { Pt } from './zones.ts'
+import type { FieldPt } from './zones.ts'
 import {
   VIEW,
-  HOME,
+  HOME_FT,
   BASES,
-  MOUND,
   FAIR_PATH,
-  OUTFIELD_GRASS_PATH,
-  FENCE_PATH,
+  INFIELD_PATH,
+  OUTFIELD_PATH,
+  TRACK_PATH,
+  WALL_PATH,
+  WALL_TOP_PATH,
   FOUL_LINE_L,
   FOUL_LINE_R,
   BASEPATH_PATH,
-  BASEPATH_WIDTH,
-  BASE_CUTOUT_R,
-  HOME_CIRCLE_R,
-  MOUND_R,
-  WARNING_TRACK_WIDTH,
+  HOME_CIRCLE_PATH,
+  MOUND_PATH,
   HOME_PLATE_PATH,
-  baseDiamond,
-  scallop,
+  STANDING_FT,
+  basePath,
+  ballPath,
+  project,
+  depthScale,
   straight,
   bow,
   arrowHead,
   shorten,
+  refFt,
   refPoint,
   lineUpSpot,
+  type Pt,
 } from './geometry.ts'
 import './Field.css'
 
@@ -96,52 +100,48 @@ export function Field({
 // ---------------------------------------------------------------------------
 
 /**
- * The field as a broadcast graphic rather than a flat illustration: turf and
- * dirt carry a gradient so the far side of the field sits back, the outfield is
- * a shade darker than the infield, and there is a warning track inside the
- * fence.
- *
- * All of it is one static layer under the play, so none of it competes with the
- * ball, the fielders or the answer.
+ * The ballpark. Every shape here is real ground put through the camera, so the
+ * arcs nest instead of crossing and the basepaths are one continuous ribbon
+ * rather than a band with discs stuck on it.
  */
 function Turf() {
   return (
     <g aria-hidden="true">
       <defs>
         {/* Light falls off toward the back of the field. */}
-        <linearGradient id="bq-turf" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="bq-grass" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--grass-far)" />
-          <stop offset="72%" stopColor="var(--grass)" />
+          <stop offset="100%" stopColor="var(--grass-near)" />
+        </linearGradient>
+        <linearGradient id="bq-infield" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--grass)" />
           <stop offset="100%" stopColor="var(--grass-near)" />
         </linearGradient>
         <linearGradient id="bq-dirt" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="var(--dirt-far)" />
           <stop offset="100%" stopColor="var(--dirt-near)" />
         </linearGradient>
-        <clipPath id="bq-fair">
-          <path d={FAIR_PATH} />
-        </clipPath>
+        <linearGradient id="bq-wall" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--wall-top)" />
+          <stop offset="100%" stopColor="var(--wall-face)" />
+        </linearGradient>
       </defs>
 
       <rect x="0" y="0" width={VIEW.w} height={VIEW.h} className="f-out-of-play" />
 
-      <g clipPath="url(#bq-fair)">
-        <path d={FAIR_PATH} className="f-turf" />
-        {/* The outfield is a shade darker than the infield, which is the one
-            turf cue worth keeping. Mow stripes were tried here and cut: at this
-            size they read as a target, and the look being aimed at is restraint. */}
-        <path d={OUTFIELD_GRASS_PATH} className="f-grass-out" />
-        <path d={FENCE_PATH} className="f-warning-track" strokeWidth={WARNING_TRACK_WIDTH} />
-      </g>
+      {/* The wall goes down first, so the turf laps over its foot. */}
+      <path d={WALL_PATH} className="f-wall" />
+      <path d={WALL_TOP_PATH} className="f-wall-top" />
 
-      <path d={BASEPATH_PATH} className="f-basepath" strokeWidth={BASEPATH_WIDTH} />
-      {BASES.map(({ name, at }) => (
-        <circle key={name} cx={at.x} cy={at.y} r={BASE_CUTOUT_R} className="f-dirt" />
-      ))}
-      <circle cx={HOME.x} cy={HOME.y} r={HOME_CIRCLE_R} className="f-dirt" />
-      <circle cx={MOUND.x} cy={MOUND.y} r={MOUND_R} className="f-mound" />
+      <path d={FAIR_PATH} className="f-grass" />
+      <path d={TRACK_PATH} className="f-track" />
+      <path d={OUTFIELD_PATH} className="f-outfield" />
+      <path d={INFIELD_PATH} className="f-infield" />
 
-      <path d={FENCE_PATH} className="f-fence" />
+      <path d={BASEPATH_PATH} className="f-basepath" />
+      <path d={HOME_CIRCLE_PATH} className="f-dirt" />
+      <path d={MOUND_PATH} className="f-mound" />
+
       <path d={FOUL_LINE_L} className="f-chalk-line" />
       <path d={FOUL_LINE_R} className="f-chalk-line" />
       <path d={HOME_PLATE_PATH} className="f-plate" />
@@ -155,7 +155,7 @@ function Bases({ runners }: { runners: Runners }) {
       {BASES.map(({ name, at }) => (
         <path
           key={name}
-          d={baseDiamond(at)}
+          d={basePath(at)}
           className={runners[name] ? 'f-base f-base--occupied' : 'f-base'}
         />
       ))}
@@ -163,20 +163,46 @@ function Bases({ runners }: { runners: Runners }) {
   )
 }
 
+/**
+ * Anybody standing on the field: a shadow where their feet are and a marker at
+ * head height. The gap between the two is the perspective doing the work, so a
+ * player near the camera stands taller than one in the outfield without
+ * anything having to be tuned.
+ */
+function Standing({
+  at,
+  r,
+  className,
+  label,
+}: {
+  at: FieldPt
+  r: number
+  className: string
+  label?: string
+}) {
+  const feet = project(at)
+  const head = project(at, STANDING_FT)
+  const s = depthScale(at)
+  return (
+    <g className={className}>
+      <ellipse cx={feet.x} cy={feet.y} rx={r * 0.85 * s} ry={r * 0.34 * s} className="f-shadow" />
+      <line x1={feet.x} y1={feet.y} x2={head.x} y2={head.y} className="f-stand" />
+      <circle cx={head.x} cy={head.y} r={r} className="f-marker" />
+      {label ? (
+        <text x={head.x} y={head.y} className="f-marker-label" dominantBaseline="central">
+          {label}
+        </text>
+      ) : null}
+    </g>
+  )
+}
+
 function Runners({ runners }: { runners: Runners }) {
   return (
     <g aria-hidden="true">
-      {BASES.filter(({ name }) => runners[name]).map(({ name, at }) => {
-        // Sit the runner on the home-plate side of the bag, off the base itself,
-        // so the filled base and the runner read as two separate facts.
-        const spot = shorten(HOME, at, 15)
-        return (
-          <Fragment key={name}>
-            <circle cx={spot.x} cy={spot.y} r={7.5} className="f-runner" />
-            <circle cx={spot.x} cy={spot.y} r={3} className="f-runner-pip" />
-          </Fragment>
-        )
-      })}
+      {BASES.filter(({ name }) => runners[name]).map(({ name, at }) => (
+        <Standing key={name} at={at} r={6} className="f-runner" />
+      ))}
     </g>
   )
 }
@@ -186,36 +212,27 @@ function Fielders({ youAre, alignment }: { youAre?: Position; alignment: Alignme
   return (
     <g aria-hidden="true">
       {ALL_POSITIONS.filter((p) => p !== youAre).map((p) => (
-        <Fielder key={p} pos={p} at={spots[p]} />
+        <Standing key={p} at={spots[p]} r={10.5} className="f-fielder" label={p} />
       ))}
-      {youAre ? <Fielder pos={youAre} at={spots[youAre]} you /> : null}
-    </g>
-  )
-}
-
-function Fielder({ pos, at, you = false }: { pos: Position; at: Pt; you?: boolean }) {
-  const r = you ? 13 : 10.5
-  return (
-    <g className={you ? 'f-fielder f-fielder--you' : 'f-fielder'}>
-      {/* A soft halo rather than a dashed outline: it reads as a highlight on a
-          broadcast graphic instead of a sticker stuck on the field. */}
-      {you ? <circle cx={at.x} cy={at.y} r={r + 7} className="f-you-glow" /> : null}
-      <circle cx={at.x} cy={at.y} r={r} className="f-fielder-dot" />
-      <text x={at.x} y={at.y} className="f-fielder-label" dominantBaseline="central">
-        {pos}
-      </text>
+      {youAre ? (
+        <Fragment>
+          <circle
+            cx={project(spots[youAre], STANDING_FT).x}
+            cy={project(spots[youAre], STANDING_FT).y}
+            r={21}
+            className="f-you-glow"
+          />
+          <Standing at={spots[youAre]} r={12.5} className="f-fielder f-fielder--you" label={youAre} />
+        </Fragment>
+      ) : null}
     </g>
   )
 }
 
 function BallTrack({ ball, muted }: { ball: BallPath; muted: boolean }) {
-  const to = refPoint(ball.zone)
-  const rolling = ball.type === 'ground' || ball.type === 'bunt'
-  const d = rolling
-    ? scallop(HOME, to, ball.type === 'bunt' ? 14 : 26)
-    : ball.type === 'line'
-      ? straight(HOME, to)
-      : bow(HOME, to, ball.type === 'popup' ? 0.45 : 0.2).d
+  const to = refFt(ball.zone)
+  const d = ballPath(ball.type, to)
+  const land = project(to)
 
   // Once the answer is on the field the ball is history: it stays visible so the
   // play still makes sense, but it stops competing with the thing being taught.
@@ -225,7 +242,8 @@ function BallTrack({ ball, muted }: { ball: BallPath; muted: boolean }) {
     <g aria-hidden="true" className={cls}>
       <path d={d} className="f-ball-halo" />
       <path d={d} className="f-ball-line" />
-      <circle cx={to.x} cy={to.y} r={5.5} className="f-ball-mark" />
+      <ellipse cx={land.x} cy={land.y} rx={4} ry={1.8} className="f-ball-shadow" />
+      <circle cx={land.x} cy={land.y - 2} r={3.4} className="f-ball-mark" />
     </g>
   )
 }
@@ -253,8 +271,8 @@ function Overlay({
           const p = at(step.at)
           return (
             <g key={i} className="f-step f-step--touch" style={delay}>
-              <circle cx={p.x} cy={p.y} r={15} className="f-touch-ring" />
-              <circle cx={p.x} cy={p.y} r={4} className="f-touch-dot" />
+              <ellipse cx={p.x} cy={p.y} rx={13} ry={6} className="f-touch-ring" />
+              <circle cx={p.x} cy={p.y} r={3} className="f-touch-dot" />
             </g>
           )
         }
@@ -264,21 +282,18 @@ function Overlay({
           // A cut or relay with no ball anywhere is not a play, it is a typo.
           // The validator rejects it, so this is only the runtime guard.
           if (!source) return null
-          const base = at(step.to)
-          const spot = lineUpSpot(at(source), base, step.kind)
+          const spotFt = lineUpSpot(refFt(source, alignment), refFt(step.to, alignment), step.kind)
+          const spot = project(spotFt)
           return (
             <g key={i} className={`f-step f-step--${step.kind}`} style={delay}>
-              <circle cx={spot.x} cy={spot.y} r={13} className="f-spot-ring" />
+              <ellipse cx={spot.x} cy={spot.y} rx={13} ry={6} className="f-spot-ring" />
               {/* Both legs of the throw, so the spot explains itself: the ball
-                  comes here, and from here it goes on to the base.
-                  The spot sits ON the line by construction, so without a wide
-                  break at that end the two legs render as one straight arrow
-                  and the whole point — the ball stops here — disappears. */}
-              {/* The throw is context; the spot and the run to it are the
-                  answer, so the two legs are drawn back a step. */}
-              <Arrow from={at(source)} to={spot} gap={22} assist />
-              <Arrow from={spot} to={base} gap={22} assist />
-              <Arrow from={at(step.from ?? step.who)} to={spot} curved gap={20} />
+                  comes here, and from here it goes on to the base. The spot sits
+                  ON the line by construction, so without a break at that end the
+                  two legs render as one arrow and the point disappears. */}
+              <Arrow from={at(source)} to={spot} gap={18} assist />
+              <Arrow from={spot} to={at(step.to)} gap={18} assist />
+              <Arrow from={at(step.from ?? step.who)} to={spot} curved gap={16} />
             </g>
           )
         }
@@ -291,7 +306,7 @@ function Overlay({
             {/* "Where do I go" is answered by a spot, not by an arrow that
                 stops in open grass, so a move always marks its destination. */}
             {step.kind === 'move' ? (
-              <circle cx={end.x} cy={end.y} r={13} className="f-spot-ring" />
+              <ellipse cx={end.x} cy={end.y} rx={13} ry={6} className="f-spot-ring" />
             ) : null}
             <Arrow from={start} to={end} curved={step.kind === 'move'} />
           </g>
@@ -322,12 +337,10 @@ function Arrow({
 }) {
   // Short hops (a first baseman stepping up to the cut spot) still need a
   // readable arrow, so never trim more than a quarter of the run.
-  const gap = Math.min(gapOverride ?? 15, Math.hypot(to.x - from.x, to.y - from.y) * 0.25)
+  const gap = Math.min(gapOverride ?? 12, Math.hypot(to.x - from.x, to.y - from.y) * 0.25)
   const tip = shorten(from, to, gap)
   const start = shorten(to, from, gap * 0.85)
-  const { d, ctrl } = curved
-    ? bow(start, tip, 0.3)
-    : { d: straight(start, tip), ctrl: start }
+  const { d, ctrl } = curved ? bow(start, tip, 0.28) : { d: straight(start, tip), ctrl: start }
 
   const cls = ['f-arrow', curved && 'f-arrow--run', assist && 'f-arrow--assist']
     .filter(Boolean)
@@ -341,7 +354,6 @@ function Arrow({
     </g>
   )
 }
-
 
 // ---------------------------------------------------------------------------
 
@@ -375,3 +387,6 @@ function list(items: string[]): string {
   if (items.length === 2) return `${items[0]} and ${items[1]}`
   return `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`
 }
+
+// Home plate is the origin; re-exported so callers do not import projection.
+export { HOME_FT }

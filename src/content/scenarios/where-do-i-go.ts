@@ -7,14 +7,25 @@
  * how this division actually runs practice: a kid told one thing here and
  * another at the field will trust neither.
  *
- * The conventions used throughout:
+ * The conventions used throughout, checked against published 12U/youth coaching
+ * guidance (qcbaseball.com defensive situations, Pro Baseball Insider, and the
+ * 12U/13U Playbook) in September 2026:
+ *
+ *   - SINGLE, runner scoring: a CORNER cuts the throw home. Third baseman on a
+ *     ball to left, first baseman on a ball to centre or right. He sets up
+ *     about 45 ft in front of the plate, on the line from the outfielder.
+ *   - GAP OR FENCE: the MIDDLE INFIELDER on the ball side runs out for the
+ *     relay. Shortstop on anything left-centre, second baseman right-centre.
+ *     The other middle infielder covers second.
  *   - The pitcher backs up third OR home, whichever base the throw is going to.
+ *     He does not cut, and the first baseman does not back up home.
  *   - The catcher backs up first when the bases are empty.
- *   - The middle infielder toward the ball goes out for the cut or relay; the
- *     other one covers second.
- *   - Throw home from left field, the third baseman is the cutoff. From centre
- *     or right, the first baseman is.
  *   - The outfielder nearest the ball backs up the outfielder fielding it.
+ *
+ * The distinction that catches people is the first two: on a ball to right, the
+ * FIRST baseman cuts a single and the SECOND baseman relays one to the wall.
+ * Same side of the field, different job, decided by how deep the ball is.
+ * b-single-or-deep-who-goes-out teaches exactly that.
  *
  * See CONTENT.md for the full checklist.
  * ---------------------------------------------------------------------------
@@ -576,6 +587,31 @@ export const WHERE_DO_I_GO: Scenario[] = [
   // -------------------------------------------------------------------------
   // Relay: going out to the ball on a ball in the gap or at the fence
   // -------------------------------------------------------------------------
+  {
+    id: 'b-single-or-deep-who-goes-out',
+    mode: 'where-do-i-go',
+    divisions: [...BOTH],
+    state: { outs: 1, runners: { first: false, second: true, third: false } },
+    ball: { type: 'line', zone: 'right' },
+    youAre: '2B',
+    prompt: 'A single lands in front of the right fielder and the runner is scoring, so what is your job?',
+    options: [
+      { id: 'first', label: 'Cover first base' },
+      { id: 'relay', label: 'Run out and take the relay' },
+      { id: 'cut', label: 'Line up as the cutoff for home' },
+      { id: 'second', label: 'Cover second base' },
+    ],
+    correctOptionId: 'first',
+    explanation:
+      'A single comes in on one throw, so the first baseman cuts it and you are not needed out there. You go out for the relay only when the ball gets past him and rolls.',
+    overlay: {
+      steps: [
+        { kind: 'move', who: '2B', to: 'first' },
+        { kind: 'cut', who: '1B', to: 'home' },
+      ],
+    },
+    tags: ['cutoff', 'relay', 'covering a base'],
+  },
   {
     id: 'b-ss-relay-deep-left',
     mode: 'where-do-i-go',

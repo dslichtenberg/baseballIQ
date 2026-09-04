@@ -39,7 +39,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     prompt:
-      'The batter swings and misses strike three, and the catcher does not catch it cleanly. What is the call?',
+      'The batter swings and misses strike three. The catcher does not catch it cleanly. What is the call?',
     options: [
       { id: 'runs', label: 'Batter runs to first' },
       { id: 'out', label: 'Batter is out' },
@@ -62,7 +62,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: true, third: false } },
     ball: { type: 'popup', zone: 'shortstop hole' },
     prompt:
-      'The batter pops it up over the shortstop and the umpire yells "infield fly, batter is out." What happens to the runners?',
+      'The batter pops it up over the shortstop. The umpire yells "infield fly, batter is out." What happens to the runners?',
     options: [
       { id: 'stay', label: 'They have to stay put' },
       { id: 'own-risk', label: 'They may go at their own risk' },
@@ -104,7 +104,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     // Check LBLL local rules for AAA before adding that tag.
     divisions: ['Majors'],
     state: { outs: 0, runners: { first: true, second: false, third: false } },
-    prompt: 'The runner from first steals second and dives in head first, and the tag is late. What is the call?',
+    prompt: 'The runner steals second and dives in head first. The tag is late. What is the call?',
     options: [
       { id: 'safe', label: 'Safe' },
       { id: 'out', label: 'Out for diving head first' },
@@ -143,7 +143,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: true, second: false, third: false }, count: { balls: 3, strikes: 1 } },
     prompt:
-      'The runner on first leaves the base before the pitch reaches the batter, and the batter takes ball four. What is the call?',
+      'The runner on first leaves early. Then the batter takes ball four. What is the call?',
     options: [
       { id: 'runner-out', label: 'The runner is out' },
       { id: 'nothing', label: 'Nothing, the batter walked' },
@@ -172,7 +172,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'reaches',
     explanation:
-      'There is no leading off in Little League, so the base is the safest place to stand until the ball gets to the plate. Leaving one step early is how a runner gets called out without anybody touching him.',
+      'There is no leading off in Little League. The base is the safest place to stand until the ball gets to the plate. Leaving one step early is how a runner gets called out without anybody touching him.',
     ruleRef: 'Little League: no leading off; a runner may leave when the pitch reaches the batter. TODO: confirm rule number.',
     localRuleSensitive: true,
     tags: ['leaving early', 'baserunning'],
@@ -200,7 +200,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     mode: 'whats-the-call',
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: false, second: false, third: false }, count: { balls: 1, strikes: 1 } },
-    prompt: 'An inside pitch is coming and the batter stands there and lets it hit his arm. What is the call?',
+    prompt: 'An inside pitch is coming. The batter stands there and lets it hit his arm. What is the call?',
     options: [
       { id: 'no-base', label: 'No base, he had to try to move' },
       { id: 'base', label: 'He gets first base anyway' },
@@ -242,7 +242,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
-    prompt: 'The shortstop throws to second and the fielder touches the bag without tagging the runner. What is the call?',
+    prompt: 'The shortstop throws to second. The fielder touches the bag but never tags the runner. What is the call?',
     options: [
       { id: 'out', label: 'Out, the runner was forced' },
       { id: 'safe', label: 'Safe, he was never tagged' },
@@ -260,7 +260,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'third' },
-    prompt: 'The third baseman steps on third as the runner from second slides in, with no tag. What is the call?',
+    prompt: 'The runner from second slides into third. The third baseman steps on the bag but never tags him. What is the call?',
     options: [
       { id: 'safe', label: 'Safe, he had to be tagged' },
       { id: 'out', label: 'Out, the fielder had the bag' },
@@ -295,7 +295,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     mode: 'whats-the-call',
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: true, third: false } },
-    prompt: 'Two runners end up standing on second base and the fielder tags both of them. What is the call?',
+    prompt: 'Two runners end up standing on second base. The fielder tags both of them. What is the call?',
     options: [
       { id: 'trailing', label: 'The runner who came second is out' },
       { id: 'lead', label: 'The runner who was there first is out' },
@@ -336,7 +336,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'third', speed: 'hard' },
-    prompt: 'A grounder bounces fair right on top of third base and then skips into foul ground. What is the call?',
+    prompt: 'A grounder bounces fair right on top of third base. Then it skips into foul ground. What is the call?',
     options: [
       { id: 'fair', label: 'Fair ball' },
       { id: 'foul', label: 'Foul ball' },
@@ -345,7 +345,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'fair',
     explanation:
-      'Past first or third, the only thing that matters is whether it was fair when it got there, and a ball that hits the bag is always fair. What it does afterward does not undo that.',
+      'Past first or third, all that matters is whether it was fair when it got there. A ball that hits the bag is always fair. What it does after that does not undo it.',
     tags: ['fair or foul'],
   },
   {
@@ -354,7 +354,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'bunt', zone: 'foul right' },
-    prompt: 'A bunt rolls up the first base line, stays in fair ground for a while, then trickles foul untouched before reaching first. What is the call?',
+    prompt: 'A bunt rolls up the first base line. It stays fair for a while, then trickles foul untouched before first. What is the call?',
     options: [
       { id: 'foul', label: 'Foul ball' },
       { id: 'fair', label: 'Fair, it was fair first' },
@@ -363,7 +363,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'foul',
     explanation:
-      'In front of the bases, what matters is where the ball ends up or where it is first touched, not where it rolled on the way. Nobody touched it, so it settled foul and it is foul.',
+      'In front of the bases, what matters is where the ball ends up or where it is first touched. Not where it rolled on the way. Nobody touched it, so it settled foul and it is foul.',
     tags: ['fair or foul', 'bunt'],
   },
   {
@@ -372,7 +372,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'bunt', zone: 'third' },
-    prompt: 'A slow roller is in fair ground near the line when the third baseman picks it up, and it was heading foul. What is the call?',
+    prompt: 'A slow roller near the line is heading foul. The third baseman picks it up in fair ground. What is the call?',
     options: [
       { id: 'fair', label: 'Fair, he touched it in fair ground' },
       { id: 'foul', label: 'Foul, it was going foul' },
@@ -408,7 +408,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'fly', zone: 'left' },
-    prompt: 'The left fielder gets his glove on a fly ball, then falls down and the ball pops out. What is the call?',
+    prompt: 'The left fielder gets a glove on a fly ball. He falls, and the ball pops out. What is the call?',
     options: [
       { id: 'no-catch', label: 'No catch, the ball is live' },
       { id: 'catch', label: 'Out, he had it first' },
@@ -427,7 +427,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: false, third: true } },
     ball: { type: 'fly', zone: 'center' },
-    prompt: 'The runner on third leaves before the center fielder catches the ball, and the defense throws to third. What is the call?',
+    prompt: 'The runner on third leaves before the catch. The defense throws to third. What is the call?',
     options: [
       { id: 'out', label: 'He is out for leaving early' },
       { id: 'safe', label: 'Safe, he got back in time' },
@@ -460,7 +460,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'hr',
     explanation:
-      'A fair ball that clears the fence in the air is a home run, and everybody on base gets to walk home ahead of the batter. Nothing the defense does afterward matters.',
+      'A fair ball that clears the fence in the air is a home run. Everybody on base walks home ahead of the batter. Nothing the defense does afterward matters.',
     tags: ['home run'],
   },
   {
@@ -478,7 +478,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'two',
     explanation:
-      'Once the ball leaves the field nobody can make a play on it, so the umpire stops everything and awards bases instead of guessing. Two bases keeps it fair to both sides.',
+      'Once the ball leaves the field nobody can make a play on it. The umpire stops everything and awards bases instead of guessing. Two bases keeps it fair to both sides.',
     ruleRef: 'Ground rule double: batted ball leaving the playing field on the ground. TODO: confirm rule number and any local ground rules.',
     localRuleSensitive: true,
     tags: ['ground rule'],
@@ -490,7 +490,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'up the middle' },
     prompt:
-      'A ground ball up the middle hits the runner going to third before any fielder touches it. What is the call?',
+      'A ground ball up the middle hits the runner going to third. No fielder touched it first. What is the call?',
     options: [
       { id: 'runner-out', label: 'Runner is out, batter gets first' },
       { id: 'live', label: 'Nothing, the ball is live' },
@@ -517,7 +517,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'live',
     explanation:
-      'A thrown ball is not the same as a batted ball, and a runner running where he is supposed to has done nothing wrong. Play on, and everybody should be running while it rolls.',
+      'A thrown ball is not the same as a batted ball. A runner running where he belongs has done nothing wrong. Play on, and everybody should be running while it rolls.',
     ruleRef: 'Runner hit by a thrown ball while running legally. TODO: confirm rule number and the interference exceptions.',
     tags: ['baserunning'],
   },
@@ -526,7 +526,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     mode: 'whats-the-call',
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: true, second: false, third: false } },
-    prompt: 'A fielder without the ball stands in the base path and the runner has to go around him. What is the call?',
+    prompt: 'A fielder without the ball blocks the base path. The runner has to go around him. What is the call?',
     options: [
       { id: 'award', label: 'Obstruction, the runner gets the base' },
       { id: 'nothing', label: 'Nothing, run around him' },
@@ -544,7 +544,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     mode: 'whats-the-call',
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: false, third: false } },
-    prompt: 'The batter beats the throw, runs well past first, turns toward the dugout side and comes straight back. Can he be tagged out?',
+    prompt: 'The batter runs past first. He turns toward the dugout side and comes right back. Can he be tagged out?',
     options: [
       { id: 'no', label: 'No, he came straight back' },
       { id: 'yes', label: 'Yes, he left the base' },
@@ -553,7 +553,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'no',
     explanation:
-      'A batter is allowed to overrun first and come back without being in danger, which is why you never slow down before the bag. Turning toward the outfield side and heading for second is what gives that protection up.',
+      'A batter may overrun first and come back without being in danger. That is why you never slow down before the bag. Turning toward the outfield side and heading for second is what gives that protection up.',
     ruleRef: 'Batter-runner overrunning first base. TODO: confirm rule number and the exact wording about attempting second.',
     localRuleSensitive: true,
     tags: ['baserunning'],
@@ -564,7 +564,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 2, runners: { first: false, second: false, third: true } },
     ball: { type: 'ground', zone: 'shortstop hole' },
-    prompt: 'With two outs the runner from third crosses the plate before the throw beats the batter to first. Does the run count?',
+    prompt: 'The runner from third crosses the plate. Then the throw beats the batter to first. Does the run count?',
     options: [
       { id: 'no', label: 'No, the third out was at first' },
       { id: 'yes', label: 'Yes, he crossed first' },
@@ -573,7 +573,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     ],
     correctOptionId: 'no',
     explanation:
-      'When the third out is the batter being put out before reaching first, no runs count on that play at all, no matter who crossed the plate first. That is why you always take the out at first with two outs.',
+      'When the third out is the batter being put out before he reaches first, no runs count on that play at all. That is why you always take the out at first with two outs.',
     ruleRef: 'No run scores when the third out is made by the batter-runner before reaching first. TODO: confirm rule number.',
     tags: ['third out', 'scoring'],
   },
@@ -583,7 +583,7 @@ export const WHATS_THE_CALL: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 2, runners: { first: true, second: true, third: true } },
     ball: { type: 'ground', zone: '3-4 hole' },
-    prompt: 'With two outs and the bases loaded, the second baseman steps on second as the runner from third crosses the plate. Does the run count?',
+    prompt: 'The second baseman steps on second. At that moment the runner from third crosses the plate. Does the run count?',
     options: [
       { id: 'no', label: 'No, the third out was a force' },
       { id: 'yes', label: 'Yes, he was already home' },

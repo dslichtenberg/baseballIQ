@@ -46,7 +46,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'left' },
     youAre: 'RF',
-    prompt: 'The ball is hit to left field, so what is your job?',
+    prompt: 'The ball is hit to left field. What is your job?',
     options: [
       { id: 'stay', label: 'Stay in right field' },
       { id: 'backup', label: 'Back up the throw to second' },
@@ -66,7 +66,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'right' },
     youAre: 'P',
-    prompt: 'A base hit goes to right field, so what is your job?',
+    prompt: 'A base hit goes to right field. What is your job?',
     options: [
       { id: 'first', label: 'Cover first base' },
       { id: 'third', label: 'Back up third base' },
@@ -86,7 +86,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'center' },
     youAre: 'P',
-    prompt: 'A single to center sends the runner from second racing home, so where do you go?',
+    prompt: 'A single to center sends the runner from second racing home. Where do you go?',
     options: [
       { id: 'home', label: 'Back up home plate' },
       { id: 'third', label: 'Back up third base' },
@@ -106,7 +106,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'left center' },
     youAre: 'P',
-    prompt: 'The runner might stop at third or might go home, so which base do you back up?',
+    prompt: 'The runner might stop at third or might go home. Which base do you back up?',
     options: [
       { id: 'watch', label: 'Watch the runner, then pick one' },
       { id: 'both', label: 'Stand between third and home' },
@@ -125,7 +125,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'C',
-    prompt: 'Nobody is on base and a routine grounder goes to short, so what is your job?',
+    prompt: 'A routine grounder goes to short. What is your job?',
     options: [
       { id: 'backup', label: 'Run down and back up first' },
       { id: 'plate', label: 'Stay at the plate' },
@@ -134,7 +134,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'backup',
     explanation:
-      'With the bases empty there is nothing for you to guard at home, and an overthrow at first with nobody behind it turns a routine out into a double. This is the hardest hustle play a catcher has.',
+      'With the bases empty there is nothing to guard at home. An overthrow at first with nobody behind it turns a routine out into a double. It is the hardest hustle play a catcher has.',
     overlay: { steps: [{ kind: 'move', who: 'C', to: 'backup first' }] },
     tags: ['backup'],
   },
@@ -145,7 +145,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'C',
-    prompt: 'There is a runner on second and a ground ball goes to short, so what is your job?',
+    prompt: 'A ground ball goes to short. What is your job?',
     options: [
       { id: 'home', label: 'Stay home and guard the plate' },
       { id: 'first', label: 'Back up first base' },
@@ -164,7 +164,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: '3-4 hole' },
     youAre: 'LF',
-    prompt: 'A grounder to the right side sends the runner to third, so where do you go?',
+    prompt: 'A grounder to the right side sends the runner to third. Where do you go?',
     options: [
       { id: 'third', label: 'Back up third base' },
       { id: 'stay', label: 'Stay where you are' },
@@ -184,7 +184,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'third' },
     youAre: 'RF',
-    prompt: 'A ground ball to third means a long throw to first, so where do you go?',
+    prompt: 'A ground ball to third means a long throw to first. Where do you go?',
     options: [
       { id: 'first', label: 'Back up first base' },
       { id: 'stay', label: 'Stay in right field' },
@@ -193,7 +193,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'The longest throw in the infield is the one most likely to sail, and behind first base is foul ground where the ball keeps rolling. Get over there on every ground ball to the left side.',
+      'The longest throw in the infield is the one most likely to sail. Behind first base is foul ground, where the ball keeps rolling. Get over there on every ground ball to the left side.',
     overlay: { steps: [{ kind: 'move', who: 'RF', to: 'backup first' }] },
     tags: ['backup'],
   },
@@ -203,7 +203,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     youAre: 'CF',
-    prompt: 'The runner on first takes off to steal second, so where do you go?',
+    prompt: 'The runner on first takes off to steal second. Where do you go?',
     options: [
       { id: 'second', label: 'Come in and back up second' },
       { id: 'stay', label: 'Stay at normal depth' },
@@ -212,7 +212,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'second',
     explanation:
-      'You are lined up straight behind the bag from where you stand, so a throw that gets past the tag comes right to you. If nobody backs it up, that steal becomes a runner on third.',
+      'You are lined up straight behind the bag. A throw that gets past the tag comes right to you. If nobody backs it up, that steal becomes a runner on third.',
     overlay: { steps: [{ kind: 'move', who: 'CF', to: 'backup second' }] },
     ruleRef: 'Stealing rules vary by division and by local league. TODO: check LBLL local rules.',
     localRuleSensitive: true,
@@ -225,7 +225,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'right' },
     youAre: 'LF',
-    prompt: 'A single to right sends the throw to second, so where do you go?',
+    prompt: 'A single to right sends the throw to second. Where do you go?',
     options: [
       { id: 'second', label: 'Come across and back up second' },
       { id: 'third', label: 'Back up third base' },
@@ -245,7 +245,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'left' },
     youAre: 'CF',
-    prompt: 'A base hit rolls to the left fielder, so what is your job?',
+    prompt: 'A base hit rolls to the left fielder. What is your job?',
     options: [
       { id: 'backup', label: 'Run over and get behind him' },
       { id: 'stay', label: 'Stay in center in case it gets by' },
@@ -264,7 +264,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: false } },
     ball: { type: 'fly', zone: 'right center' },
     youAre: 'RF',
-    prompt: 'The center fielder calls off for a ball in the gap, so what do you do?',
+    prompt: 'The center fielder calls off for a ball in the gap. What do you do?',
     options: [
       { id: 'backup', label: 'Peel off and back him up' },
       { id: 'keep', label: 'Keep going for it anyway' },
@@ -287,7 +287,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'first' },
     youAre: 'P',
-    prompt: 'A ground ball pulls the first baseman well off the bag, so where do you go?',
+    prompt: 'A ground ball pulls the first baseman well off the bag. Where do you go?',
     options: [
       { id: 'first', label: 'Sprint to cover first base' },
       { id: 'ball', label: 'Go help him field it' },
@@ -307,7 +307,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'bunt', zone: 'first' },
     youAre: '2B',
-    prompt: 'The batter bunts and the first baseman charges hard, so where do you go?',
+    prompt: 'The batter bunts and the first baseman charges hard. Where do you go?',
     options: [
       { id: 'first', label: 'Cover first base' },
       { id: 'second', label: 'Cover second base' },
@@ -327,7 +327,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'bunt', zone: 'third' },
     youAre: 'SS',
-    prompt: 'The third baseman charges a bunt down the line, so where do you go?',
+    prompt: 'The third baseman charges a bunt down the line. Where do you go?',
     options: [
       { id: 'third', label: 'Cover third base' },
       { id: 'second', label: 'Cover second base' },
@@ -347,7 +347,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'left' },
     youAre: '2B',
-    prompt: 'A base hit goes to left field and the batter is thinking about two, so where do you go?',
+    prompt: 'A base hit goes to left field and the batter is thinking about two. Where do you go?',
     options: [
       { id: 'second', label: 'Cover second base' },
       { id: 'out', label: 'Go out for the relay throw' },
@@ -367,7 +367,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'right' },
     youAre: 'SS',
-    prompt: 'A base hit goes to right field and the batter rounds first hard, so where do you go?',
+    prompt: 'A base hit goes to right field and the batter rounds first hard. Where do you go?',
     options: [
       { id: 'second', label: 'Cover second base' },
       { id: 'out', label: 'Go out for the relay throw' },
@@ -387,7 +387,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'line', zone: 'deep left' },
     youAre: '3B',
-    prompt: 'A ball rolls to the fence in left and the shortstop runs out for the relay, so where do you go?',
+    prompt: 'A ball rolls to the fence in left. The shortstop runs out for the relay. Where do you go?',
     options: [
       { id: 'third', label: 'Stay and cover third base' },
       { id: 'out', label: 'Go out and help with the relay' },
@@ -396,7 +396,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'third',
     explanation:
-      'The runner from first is going to third on a ball that deep, and the throw needs somebody standing on the bag to catch it. Two players chasing the same relay leaves the base wide open.',
+      'The runner from first is going to third on a ball that deep. The throw needs somebody standing on the bag. Two players chasing the same relay leaves the base wide open.',
     overlay: { steps: [{ kind: 'move', who: '3B', to: 'third' }] },
     tags: ['covering a base', 'relay'],
   },
@@ -407,7 +407,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: '1B',
-    prompt: 'A routine grounder goes to the shortstop, so where do you go?',
+    prompt: 'A routine grounder goes to the shortstop. Where do you go?',
     options: [
       { id: 'bag', label: 'Get to the bag and give a target' },
       { id: 'ball', label: 'Move toward the ball' },
@@ -426,7 +426,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: false, third: true } },
     youAre: 'P',
-    prompt: 'The ball gets past the catcher and he chases it to the backstop, so where do you go?',
+    prompt: 'The ball gets past the catcher and he chases it to the backstop. Where do you go?',
     options: [
       { id: 'home', label: 'Cover home plate' },
       { id: 'ball', label: 'Chase the ball too' },
@@ -447,7 +447,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'right center' },
     youAre: '3B',
-    prompt: 'A ball rolls into the gap and the runner from first is coming all the way, so where do you go?',
+    prompt: 'A ball rolls into the gap. The runner from first is coming all the way. Where do you go?',
     options: [
       { id: 'third', label: 'Get to third and wait for the throw' },
       { id: 'cutoff', label: 'Go out and be the cutoff man' },
@@ -471,7 +471,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'shallow center' },
     youAre: '1B',
-    prompt: 'A single drops in center and the runner from second is trying to score, so what is your job?',
+    prompt: 'A single drops in center and the runner from second is trying to score. What is your job?',
     options: [
       { id: 'cover', label: 'Cover first base' },
       { id: 'cut', label: 'Be the cutoff man for the throw home' },
@@ -480,7 +480,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'cut',
     explanation:
-      'On a throw home from center, the first baseman is the cutoff. Line up between the center fielder and home so you give him a target, and so you can cut the ball off and get someone else if the run is already in.',
+      'On a throw home from center, the first baseman is the cutoff. Line up between the center fielder and home so he has a target. If the run is already in, cut it and get somebody else.',
     overlay: { steps: [{ kind: 'cut', who: '1B', to: 'home' }] },
     tags: ['cutoff'],
   },
@@ -491,7 +491,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'left' },
     youAre: '3B',
-    prompt: 'A single to left sends the runner from second home, so what is your job?',
+    prompt: 'A single to left sends the runner from second home. What is your job?',
     options: [
       { id: 'cut', label: 'Be the cutoff man for the throw home' },
       { id: 'third', label: 'Stay and cover third base' },
@@ -511,7 +511,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'right' },
     youAre: '1B',
-    prompt: 'A base hit to right field sends the runner home, so what is your job?',
+    prompt: 'A base hit to right field sends the runner home. What is your job?',
     options: [
       { id: 'cut', label: 'Be the cutoff man for the throw home' },
       { id: 'first', label: 'Cover first base' },
@@ -531,7 +531,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'left' },
     youAre: 'SS',
-    prompt: 'A single to left and the runner from first is trying for third, so what is your job?',
+    prompt: 'A single to left and the runner from first is trying for third. What is your job?',
     options: [
       { id: 'cut', label: 'Line up as the cutoff to third' },
       { id: 'second', label: 'Cover second base' },
@@ -540,7 +540,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'cut',
     explanation:
-      'The third baseman has to stay on the bag to make the tag, so somebody else has to be the middle of that throw. You are the closest infielder to the ball.',
+      'The third baseman has to stay on the bag to make the tag. Somebody else has to be the middle of that throw. You are the closest infielder to the ball.',
     overlay: { steps: [{ kind: 'cut', who: 'SS', to: 'third' }] },
     tags: ['cutoff'],
   },
@@ -551,7 +551,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'right center' },
     youAre: '1B',
-    prompt: 'You are the cutoff man for a throw home, so where exactly do you stand?',
+    prompt: 'You are the cutoff man for a throw home. Where exactly do you stand?',
     options: [
       { id: 'line', label: 'On a straight line, ball to plate' },
       { id: 'halfway', label: 'Halfway to the outfielder' },
@@ -560,7 +560,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'line',
     explanation:
-      'If you are off the line, a perfect throw through you misses the plate. Standing on the line means the outfielder gets one target and the ball goes the right way whether you cut it or let it through.',
+      'If you are off the line, a perfect throw through you misses the plate. Standing on the line gives the outfielder one target. The ball goes the right way whether you cut it or let it through.',
     overlay: { steps: [{ kind: 'cut', who: '1B', to: 'home' }] },
     tags: ['cutoff'],
   },
@@ -571,7 +571,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'center' },
     youAre: '1B',
-    prompt: 'You are lined up as the cutoff man and the outfielder has the ball, so what do you do with your arms?',
+    prompt: 'You are lined up as the cutoff man and the outfielder has the ball. What do you do with your arms?',
     options: [
       { id: 'up', label: 'Both hands high so he can see you' },
       { id: 'down', label: 'Keep them down and stay still' },
@@ -594,7 +594,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'right' },
     youAre: '2B',
-    prompt: 'A single lands in front of the right fielder and the runner is scoring, so what is your job?',
+    prompt: 'A single lands in front of the right fielder and the runner is scoring. What is your job?',
     options: [
       { id: 'first', label: 'Cover first base' },
       { id: 'relay', label: 'Run out and take the relay' },
@@ -619,7 +619,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'line', zone: 'deep left' },
     youAre: 'SS',
-    prompt: 'The ball rolls all the way to the fence in left, so what is your job?',
+    prompt: 'The ball rolls all the way to the fence in left. What is your job?',
     options: [
       { id: 'relay', label: 'Run out and take the relay throw' },
       { id: 'second', label: 'Cover second base' },
@@ -639,7 +639,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'line', zone: 'deep right' },
     youAre: '2B',
-    prompt: 'A ball gets by the right fielder and rolls to the wall, so what is your job?',
+    prompt: 'A ball gets by the right fielder and rolls to the wall. What is your job?',
     options: [
       { id: 'relay', label: 'Go out and take the relay throw' },
       { id: 'second', label: 'Cover second base' },
@@ -659,7 +659,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'line', zone: 'deep left center' },
     youAre: 'SS',
-    prompt: 'A ball splits the gap in left center and rolls, so where do you go?',
+    prompt: 'A ball splits the gap in left center and rolls. Where do you go?',
     options: [
       { id: 'relay', label: 'Out toward the ball for the relay' },
       { id: 'second', label: 'Straight to second base' },
@@ -679,7 +679,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'line', zone: 'deep right center' },
     youAre: '2B',
-    prompt: 'You are going out for a relay throw, so how far out do you go?',
+    prompt: 'You are going out for a relay throw. How far out do you go?',
     options: [
       { id: 'easy', label: 'Far enough for an easy throw to you' },
       { id: 'edge', label: 'Just onto the outfield grass' },
@@ -698,7 +698,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     ball: { type: 'line', zone: 'deep left' },
     youAre: 'SS',
-    prompt: 'You are running out for the relay throw, so which way do you face while you wait?',
+    prompt: 'You are running out for the relay throw. Which way do you face while you wait?',
     options: [
       { id: 'open', label: 'Turned so you can see the bases' },
       { id: 'square', label: 'Square to the outfielder only' },
@@ -707,7 +707,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'open',
     explanation:
-      'If you catch the ball facing straight out you still have to turn around before you know where to throw, and that turn is the runner taking another base. Open up so you already know.',
+      'Catch it facing straight out and you still have to turn before you know where to throw. That turn is the runner taking another base. Open up so you already know.',
     tags: ['relay'],
   },
 
@@ -721,7 +721,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'line', zone: 'deep center' },
     youAre: '1B',
-    prompt: 'The batter is rounding first hard on a ball to the wall, so where do you go?',
+    prompt: 'The batter is rounding first hard on a ball to the wall. Where do you go?',
     options: [
       { id: 'trail', label: 'Trail him toward second' },
       { id: 'first', label: 'Stay on first base' },
@@ -739,7 +739,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 1, runners: { first: true, second: false, third: true } },
     youAre: 'C',
-    prompt: 'The runner on first takes off for second with a runner on third, so what do you do?',
+    prompt: 'The runner on first takes off for second. What do you do?',
     options: [
       { id: 'look', label: 'Check the runner on third first' },
       { id: 'throw', label: 'Throw straight through to second' },
@@ -760,7 +760,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'fly', zone: 'right' },
     youAre: 'SS',
-    prompt: 'A routine fly ball is caught in right field with the bases empty, so what do you do?',
+    prompt: 'A routine fly ball is caught in right field with the bases empty. What do you do?',
     options: [
       { id: 'move', label: 'Move toward second for the throw in' },
       { id: 'stand', label: 'Stand still, the play is over' },
@@ -779,7 +779,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'left center' },
     youAre: 'LF',
-    prompt: 'You field a single in the gap and see the cutoff man with his hands up, so where do you throw?',
+    prompt: 'You field a single in the gap. The cutoff man has his hands up. Where do you throw?',
     options: [
       { id: 'chest', label: 'At his chest, hard and straight' },
       { id: 'over', label: 'Over his head toward the plate' },
@@ -799,7 +799,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'foul right' },
     youAre: 'RF',
-    prompt: 'A ball is slicing toward the line in your corner, so what do you do?',
+    prompt: 'A ball is slicing toward the line in your corner. What do you do?',
     options: [
       { id: 'cut-off', label: 'Cut it off before it reaches the corner' },
       { id: 'follow', label: 'Follow it into the corner' },
@@ -808,7 +808,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'cut-off',
     explanation:
-      'A ball that beats you to the corner is a triple, because you have to run in there and then throw all the way back. Angle to head it off instead of chasing behind it.',
+      'A ball that beats you to the corner is a triple. You have to run in there and then throw all the way back. Angle to head it off instead of chasing behind it.',
     tags: ['outfield'],
   },
   {
@@ -817,7 +817,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     youAre: 'SS',
-    prompt: 'The runner on first breaks for second and the catcher is throwing, so where do you go?',
+    prompt: 'The runner on first breaks for second and the catcher is throwing. Where do you go?',
     options: [
       { id: 'cover', label: 'Get to second and give a target' },
       { id: 'backup', label: 'Back up the second baseman' },
@@ -839,7 +839,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'fly', zone: 'left center' },
     youAre: 'LF',
-    prompt: 'A fly ball is in the gap and you both hear the center fielder call it, so what do you do?',
+    prompt: 'A fly ball is in the gap. You hear the center fielder call for it. What do you do?',
     options: [
       { id: 'yield', label: 'Give way and back him up' },
       { id: 'take', label: 'Take it, you called it first' },
@@ -857,7 +857,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     youAre: '3B',
-    prompt: 'A pitch gets past the catcher to the backstop and the runner on second takes off, so where do you go?',
+    prompt: 'A pitch gets past the catcher. The runner on second takes off. Where do you go?',
     options: [
       { id: 'third', label: 'Get to third for the throw' },
       { id: 'ball', label: 'Go help chase the ball' },
@@ -878,7 +878,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'popup', zone: 'mound' },
     youAre: 'P',
-    prompt: 'A pop up goes straight up over the infield and an infielder calls for it, so what do you do?',
+    prompt: 'A pop up goes straight up over the infield. An infielder calls for it. What do you do?',
     options: [
       { id: 'clear', label: 'Point at it and get clear' },
       { id: 'catch', label: 'Catch it, it is right there' },
@@ -896,7 +896,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: true, second: true, third: false } },
     youAre: '2B',
-    prompt: 'The pitcher is coming set with runners on first and second, so what should you already know?',
+    prompt: 'The pitcher is coming set with runners on first and second. What should you already know?',
     options: [
       { id: 'plan', label: 'Where you throw it on a grounder' },
       { id: 'batter', label: 'What the batter did last time' },

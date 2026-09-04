@@ -28,7 +28,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole', speed: 'hard' },
     youAre: 'SS',
-    prompt: 'A hard ground ball comes right at you, so where do you throw it?',
+    prompt: 'A hard ground ball comes right at you. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'second', label: 'Throw to second for the force' },
@@ -53,7 +53,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'third' },
     youAre: '3B',
-    prompt: 'A ground ball comes to you at third, so where do you throw it?',
+    prompt: 'A ground ball comes to you at third. Where do you throw it?',
     options: [
       { id: 'step', label: 'Step on third' },
       { id: 'first', label: 'Throw to first' },
@@ -78,7 +78,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 2, runners: { first: false, second: false, third: true } },
     ball: { type: 'ground', zone: '3-4 hole' },
     youAre: '2B',
-    prompt: 'A ground ball comes to you with two outs, so where do you throw it?',
+    prompt: 'A ground ball comes to you. Where do you throw it?',
     options: [
       { id: 'home', label: 'Throw home' },
       { id: 'first', label: 'Throw to first' },
@@ -87,7 +87,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'The out at first is the third out, so the inning is over before the runner can cross the plate and the run does not count. Take the easy one.',
+      'The out at first is the third out, so the inning ends before the runner can cross the plate. The run does not count. Take the easy one.',
     overlay: {
       steps: [
         { kind: 'throw', from: '2B', to: 'first' },
@@ -103,7 +103,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: true, third: false } },
     ball: { type: 'ground', zone: 'third' },
     youAre: '3B',
-    prompt: 'A ground ball comes right to you a step from the bag, so what do you do?',
+    prompt: 'A ground ball comes right to you a step from the bag. What do you do?',
     options: [
       { id: 'step', label: 'Step on third' },
       { id: 'first', label: 'Throw to first' },
@@ -123,7 +123,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: true, third: true } },
     ball: { type: 'ground', zone: 'mound', speed: 'normal' },
     youAre: 'P',
-    prompt: 'The bases are loaded with nobody out and the ball comes back to you, so where do you throw?',
+    prompt: 'The bases are loaded and the ball comes back to you. Where do you throw?',
     options: [
       { id: 'home', label: 'Throw home for the force' },
       { id: 'first', label: 'Throw to first' },
@@ -148,7 +148,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: false, third: true } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'SS',
-    prompt: 'Runners are on first and third and a ground ball comes to you, so where do you throw?',
+    prompt: 'A ground ball comes to you. Where do you throw it?',
     options: [
       { id: 'second', label: 'Throw to second for the force' },
       { id: 'home', label: 'Throw home' },
@@ -173,7 +173,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 2, runners: { first: true, second: true, third: true } },
     ball: { type: 'ground', zone: '3-4 hole' },
     youAre: '2B',
-    prompt: 'Two outs, bases loaded, and the ball comes to you near the bag, so what do you do?',
+    prompt: 'The ball comes to you right next to the bag. What do you do?',
     options: [
       { id: 'second', label: 'Step on second' },
       { id: 'home', label: 'Throw home' },
@@ -182,7 +182,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'second',
     explanation:
-      'With the bases loaded you can force a runner at any base, so take the one closest to you and do not risk a throw. Any third out on a force means no run scores.',
+      'With the bases loaded you can force a runner at any base. Take the one closest to you and do not risk a throw. Any third out on a force means no run scores.',
     overlay: { steps: [{ kind: 'touch', at: 'second' }] },
     tags: ['force play', 'third out'],
   },
@@ -193,7 +193,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'up the middle' },
     youAre: 'SS',
-    prompt: 'A ground ball up the middle comes to you with a runner on second, so where do you throw?',
+    prompt: 'A ground ball up the middle comes to you. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'third', label: 'Throw to third' },
@@ -218,7 +218,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'first', speed: 'hard' },
     youAre: '1B',
-    prompt: 'You field it standing on first base, so what happens to the runner going to second?',
+    prompt: 'You field it standing on first base. What happens to the runner going to second?',
     options: [
       { id: 'still-forced', label: 'He is still forced at second' },
       { id: 'must-tag', label: 'He has to be tagged now' },
@@ -241,7 +241,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false }, alignment: 'double play depth' },
     ball: { type: 'ground', zone: 'shortstop hole', speed: 'hard' },
     youAre: 'SS',
-    prompt: 'Nobody out, a runner on first, and a clean ground ball to you, so what is the play?',
+    prompt: 'A clean ground ball comes to you. What is the play?',
     options: [
       { id: 'two', label: 'Flip to second, then on to first' },
       { id: 'first-only', label: 'Throw straight to first' },
@@ -266,7 +266,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'third', speed: 'slow' },
     youAre: '3B',
-    prompt: 'A slow roller dies in front of you with a runner on first, so what do you do?',
+    prompt: 'A slow roller dies in front of you. What do you do?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'second', label: 'Throw to second' },
@@ -275,7 +275,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'The ball took too long to reach you, so the lead runner is already there and a rushed throw is how a one-out play becomes nobody out. Take the out you know you have.',
+      'The ball took too long to reach you, so the lead runner is already there. A rushed throw turns a one-out play into nobody out. Take the out you know you have.',
     overlay: {
       steps: [
         { kind: 'throw', from: '3B', to: 'first' },
@@ -291,7 +291,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false }, alignment: 'double play depth' },
     ball: { type: 'ground', zone: '3-4 hole' },
     youAre: '2B',
-    prompt: 'A ground ball comes to you with a runner on first, so who covers second for your throw?',
+    prompt: 'A ground ball comes to you. Who covers second for your throw?',
     options: [
       { id: 'ss', label: 'The shortstop' },
       { id: 'p', label: 'The pitcher' },
@@ -320,7 +320,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: true }, alignment: 'infield in' },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'SS',
-    prompt: 'The infield is in, the runner breaks for home, and the ball comes to you, so where do you throw?',
+    prompt: 'The infield is in. The runner breaks for home and the ball comes to you. Where do you throw?',
     options: [
       { id: 'home', label: 'Throw home' },
       { id: 'first', label: 'Throw to first' },
@@ -345,7 +345,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: true }, alignment: 'infield in' },
     ball: { type: 'ground', zone: 'third' },
     youAre: '3B',
-    prompt: 'The infield is in but the runner freezes on third, so where do you throw?',
+    prompt: 'The infield is in but the runner freezes on third. Where do you throw?',
     options: [
       { id: 'home', label: 'Throw home anyway' },
       { id: 'first', label: 'Throw to first' },
@@ -370,7 +370,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: true } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'SS',
-    prompt: 'You are at normal depth with a runner on third and the ball comes to you, so where do you throw?',
+    prompt: 'You are playing at normal depth. The ball comes to you. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'home', label: 'Throw home' },
@@ -379,7 +379,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'From normal depth you are too far back to beat a runner who left on contact, so a throw home is a race you already lost. Take the out and let the run score.',
+      'From normal depth you are too far back to beat a runner who left on contact. A throw home is a race you already lost. Take the out and let the run score.',
     overlay: {
       steps: [
         { kind: 'throw', from: 'SS', to: 'first' },
@@ -395,7 +395,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 2, runners: { first: false, second: false, third: true } },
     ball: { type: 'ground', zone: 'third' },
     youAre: '3B',
-    prompt: 'Two outs and a runner on third, and the ball comes to you, so where do you throw?',
+    prompt: 'The ball comes to you. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'home', label: 'Throw home' },
@@ -420,7 +420,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: true, third: true } },
     ball: { type: 'bunt', zone: 'in front of plate', speed: 'slow' },
     youAre: 'C',
-    prompt: 'The bases are loaded and a bunt dies in front of the plate, so what is the quickest out?',
+    prompt: 'A bunt dies in front of the plate. What is the quickest out?',
     options: [
       { id: 'step-home', label: 'Step on home plate' },
       { id: 'first', label: 'Throw to first' },
@@ -429,7 +429,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'step-home',
     explanation:
-      'With the bases loaded the runner from third is forced, so the plate only has to be touched and you are already standing on it. No throw means nothing to throw away.',
+      'With the bases loaded the runner from third is forced. The plate only has to be touched, and you are standing on it. No throw means nothing to throw away.',
     overlay: { steps: [{ kind: 'touch', at: 'home' }] },
     tags: ['force play', 'bunt', 'play at the plate'],
   },
@@ -439,7 +439,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: false, third: true } },
     youAre: 'C',
-    prompt: 'The runner from third is coming home and the throw beats him, so how do you get him out?',
+    prompt: 'The runner from third is coming home and the throw beats him. How do you get him out?',
     options: [
       { id: 'tag', label: 'Tag him with the ball' },
       { id: 'plate', label: 'Touch home plate' },
@@ -463,7 +463,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'bunt', zone: 'in front of plate' },
     youAre: 'C',
-    prompt: 'Nobody is on base and a bunt rolls out in front of the plate, so what do you do?',
+    prompt: 'A bunt rolls out in front of the plate. What do you do?',
     options: [
       { id: 'first', label: 'Pounce on it, throw to first' },
       { id: 'wait', label: 'Wait and see if it goes foul' },
@@ -488,7 +488,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'bunt', zone: 'mound', speed: 'normal' },
     youAre: 'P',
-    prompt: 'A bunt comes right back at you off the mound with a runner on first, so where do you throw?',
+    prompt: 'A bunt comes right back at you off the mound. Where do you throw it?',
     options: [
       { id: 'second', label: 'Throw to second for the force' },
       { id: 'first', label: 'Throw to first' },
@@ -513,7 +513,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: true, third: false } },
     ball: { type: 'bunt', zone: 'third', speed: 'slow' },
     youAre: '3B',
-    prompt: 'A soft bunt dribbles down the line and you barely reach it, so where do you throw?',
+    prompt: 'A soft bunt dribbles down the line and you barely reach it. Where do you throw?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'third', label: 'Step back on third' },
@@ -522,7 +522,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'You had to leave the bag to get it, so nobody is at third to take your throw and the lead runner is already standing there. First is the only out still available.',
+      'You had to leave the bag to get it, so nobody is at third to take your throw. The lead runner is already standing there. First is the only out left.',
     overlay: {
       steps: [
         { kind: 'throw', from: '3B', to: 'first' },
@@ -538,7 +538,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'third', speed: 'slow' },
     youAre: '3B',
-    prompt: 'A slow roller is trickling toward you with nobody on, so what do you do?',
+    prompt: 'A slow roller is trickling toward you with nobody on. What do you do?',
     options: [
       { id: 'charge', label: 'Charge it and throw on the run' },
       { id: 'wait', label: 'Wait for it to come to you' },
@@ -560,7 +560,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     divisions: [...BOTH],
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     youAre: 'SS',
-    prompt: 'You have the ball and a runner is stuck between second and third, so what do you do?',
+    prompt: 'You have the ball and a runner is stuck between second and third. What do you do?',
     options: [
       { id: 'run-at', label: 'Run hard at him toward second' },
       { id: 'wait', label: 'Stand still and wait' },
@@ -579,7 +579,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: true } },
     ball: { type: 'ground', zone: 'up the middle', speed: 'slow' },
     youAre: 'P',
-    prompt: 'You field a slow roller with a runner leaning off third, so what do you do first?',
+    prompt: 'You field a slow roller. The runner on third is a few steps off the bag. What do you do first?',
     options: [
       { id: 'look', label: 'Look him back, then throw to first' },
       { id: 'first', label: 'Throw to first right away' },
@@ -608,7 +608,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'popup', zone: 'shortstop hole' },
     youAre: 'SS',
-    prompt: 'A pop up goes straight up between you and the third baseman, so what do you do?',
+    prompt: 'A pop up goes straight up between you and the third baseman. What do you do?',
     options: [
       { id: 'call', label: 'Call for it loudly and take it' },
       { id: 'wave', label: 'Wave the third baseman off silently' },
@@ -627,7 +627,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: true, third: false } },
     ball: { type: 'popup', zone: 'up the middle' },
     youAre: 'SS',
-    prompt: 'The umpire calls infield fly and you are camped under it, so what do you do?',
+    prompt: 'The umpire calls infield fly and you are camped under it. What do you do?',
     options: [
       { id: 'catch', label: 'Catch it like normal' },
       { id: 'drop', label: 'Let it drop for a double play' },
@@ -648,7 +648,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: true } },
     ball: { type: 'fly', zone: 'shallow left' },
     youAre: 'LF',
-    prompt: 'You catch a shallow fly ball with a runner on third who is tagging, so what do you do?',
+    prompt: 'You catch a shallow fly ball. The runner on third is tagging. What do you do?',
     options: [
       { id: 'home', label: 'Come up throwing to home' },
       { id: 'second', label: 'Throw to second' },
@@ -668,7 +668,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 2, runners: { first: true, second: true, third: false } },
     ball: { type: 'fly', zone: 'center' },
     youAre: 'CF',
-    prompt: 'Two outs and you settle under a routine fly ball, so what happens after you catch it?',
+    prompt: 'Two outs and you settle under a routine fly ball. What happens after you catch it?',
     options: [
       { id: 'nothing', label: 'Nothing, the inning is over' },
       { id: 'second', label: 'Throw to second quickly' },
@@ -687,7 +687,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'fly', zone: 'shallow center' },
     youAre: 'CF',
-    prompt: 'A blooper drops between you and the second baseman and you both call it, so who takes it?',
+    prompt: 'A blooper drops between you and the second baseman and you both call it. Who takes it?',
     options: [
       { id: 'cf', label: 'You do, coming in is easier' },
       { id: '2b', label: 'The second baseman' },
@@ -696,7 +696,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'cf',
     explanation:
-      'You are running in and can see the whole play in front of you, while the infielder is running away from everything with his back turned. The outfielder gets the ball whenever both can reach it.',
+      'You are running in and can see the whole play in front of you. The infielder is running away from everything with his back turned. The outfielder gets the ball whenever both can reach it.',
     tags: ['pop up', 'communication'],
   },
 
@@ -710,7 +710,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'deep right' },
     youAre: 'RF',
-    prompt: 'You run down a ball near the fence and the runner is rounding third, so where do you throw?',
+    prompt: 'You run down a ball near the fence and the runner is rounding third. Where do you throw?',
     options: [
       { id: 'cutoff', label: 'To the cutoff man' },
       { id: 'home', label: 'All the way home on the fly' },
@@ -730,7 +730,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: 'right' },
     youAre: 'RF',
-    prompt: 'A single gets through to you and the runner from first is digging for third, so where do you throw?',
+    prompt: 'A single gets through to you. The runner from first is digging for third. Where do you throw?',
     options: [
       { id: 'third', label: 'Ahead of him, to third' },
       { id: 'second', label: 'Behind him, to second' },
@@ -750,7 +750,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'left' },
     youAre: 'LF',
-    prompt: 'A single scores the runner easily and the batter is rounding first, so where do you throw?',
+    prompt: 'A single scores the runner easily and the batter is rounding first. Where do you throw?',
     options: [
       { id: 'second', label: 'To second, keep the batter there' },
       { id: 'home', label: 'Home, try to get the run' },
@@ -770,7 +770,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'left center', speed: 'hard' },
     youAre: 'CF',
-    prompt: 'A hard ground ball is skipping into the gap and you have to dive or cut it off, so what do you do?',
+    prompt: 'A hard ground ball is skipping into the gap. What do you do?',
     options: [
       { id: 'front', label: 'Get in front and keep it close' },
       { id: 'dive', label: 'Dive at it sideways' },
@@ -789,7 +789,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'shallow left' },
     youAre: 'LF',
-    prompt: 'A soft single drops in front of you with a runner going first to third, so how do you play it?',
+    prompt: 'A soft single drops in front of you. The runner is going first to third. How do you play it?',
     options: [
       { id: 'charge', label: 'Charge it and come up throwing' },
       { id: 'wait', label: 'Let it stop rolling first' },
@@ -798,7 +798,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'charge',
     explanation:
-      'The runner is going the whole way whether you hurry or not, so the only thing you control is how soon the ball leaves your hand. Nobody on base is threatening to run past you here.',
+      'The runner is going the whole way whether you hurry or not. The only thing you control is how soon the ball leaves your hand. Nobody on base is threatening to run past you here.',
     tags: ['outfield throw'],
   },
 
@@ -812,7 +812,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'first' },
     youAre: 'P',
-    prompt: 'A ground ball pulls the first baseman off the bag toward you, so what do you do?',
+    prompt: 'A ground ball pulls the first baseman off the bag toward you. What do you do?',
     options: [
       { id: 'cover', label: 'Sprint over and cover first' },
       { id: 'watch', label: 'Watch him make the play' },
@@ -836,7 +836,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 1, runners: { first: false, second: true, third: false }, count: { balls: 1, strikes: 2 } },
     youAre: 'C',
-    prompt: 'A pitch bounces in the dirt and you knock it down in front of you, so what is the very next thing?',
+    prompt: 'A pitch bounces in the dirt and you knock it down. What is the very next thing?',
     options: [
       { id: 'find', label: 'Find the ball, then find the runner' },
       { id: 'throw', label: 'Throw to third right away' },
@@ -856,7 +856,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: '1B',
-    prompt: 'The throw from short is coming and it is going to be close, so what do you do?',
+    prompt: 'The throw from short is coming and it is going to be close. What do you do?',
     options: [
       { id: 'stretch', label: 'Stretch toward the throw' },
       { id: 'wait', label: 'Stand on the bag and wait' },
@@ -865,7 +865,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'stretch',
     explanation:
-      'Reaching out means the ball arrives a full step sooner while your foot is still on the bag, and a step is exactly how close these plays are. Stretch toward where the ball actually is, not always toward the shortstop.',
+      'Reaching out means the ball arrives a full step sooner with your foot still on the bag. A step is exactly how close these plays are. Stretch toward the ball, not always toward the shortstop.',
     tags: ['covering a base'],
   },
   {
@@ -875,7 +875,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: true, second: false, third: false } },
     ball: { type: 'ground', zone: '3-4 hole' },
     youAre: '2B',
-    prompt: 'You bobble the ball and pick it up late with a runner on first, so where do you throw?',
+    prompt: 'You bobble the ball and pick it up late. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'second', label: 'Throw to second anyway' },
@@ -899,7 +899,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 1, runners: { first: true, second: false, third: false } },
     youAre: 'C',
-    prompt: 'The runner takes off for second on the pitch, so what do you do with the ball?',
+    prompt: 'The runner takes off for second on the pitch. What do you do with the ball?',
     options: [
       { id: 'second', label: 'Come up and throw to second' },
       { id: 'hold', label: 'Hold it, he has the base' },
@@ -926,7 +926,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'center' },
     youAre: 'CF',
-    prompt: 'A single is coming to you and a runner is trying to score, so how do you set up to throw?',
+    prompt: 'A single is coming to you and a runner is trying to score. How do you set up to throw?',
     options: [
       { id: 'through', label: 'Get behind it and step through it' },
       { id: 'sideways', label: 'Field it sideways and flick it' },
@@ -945,7 +945,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 2, runners: { first: true, second: true, third: false } },
     ball: { type: 'ground', zone: 'mound', speed: 'hard' },
     youAre: 'P',
-    prompt: 'Two outs and a hard comebacker sticks in your glove, so where do you throw?',
+    prompt: 'A hard comebacker sticks in your glove. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'third', label: 'Throw to third' },
@@ -954,7 +954,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'Any of those is a force with two outs, but first is the throw you have made a thousand times and the fielder is already standing there. With the inning on the line, pick the routine one.',
+      'Any of those is a force with two outs. First is the throw you have made a thousand times, and the fielder is already there. With the inning on the line, pick the routine one.',
     overlay: {
       steps: [
         { kind: 'throw', from: 'P', to: 'first' },

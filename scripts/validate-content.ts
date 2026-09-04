@@ -14,6 +14,13 @@ import type { Scenario, OverlayStep, FieldRef } from '../src/types.ts'
 
 const errors: string[] = []
 
+function sentences(text: string): string[] {
+  return text
+    .split(/(?<=[.?!])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean)
+}
+
 function fail(id: string, message: string) {
   errors.push(`${id}: ${message}`)
 }
@@ -92,6 +99,19 @@ function checkScenario(s: Scenario, seen: Set<string>) {
 
   if (!s.prompt.trim().endsWith('?')) {
     fail(id, 'prompt is the question, so it should end with a question mark')
+  }
+
+  // Reading level, enforced the only way a script can: sentence length. These
+  // are read by a nine year old holding a phone in the sun, so a long compound
+  // sentence has to become two short ones. The situation strip and the diagram
+  // already show the outs and the runners, so the prompt should not repeat them.
+  for (const sentence of sentences(s.prompt)) {
+    const words = sentence.split(/\s+/).length
+    if (words > 15) fail(id, `prompt sentence is ${words} words; split it: "${sentence}"`)
+  }
+  for (const sentence of sentences(s.explanation)) {
+    const words = sentence.split(/\s+/).length
+    if (words > 23) fail(id, `explanation sentence is ${words} words; split it: "${sentence}"`)
   }
 
   const explanation = (s.explanation ?? '').trim()

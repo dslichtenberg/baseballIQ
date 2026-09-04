@@ -2,7 +2,12 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 4px;
+  border-radius: 10px;
+  /* A hairline edge and a little lift, so the field reads as a panel in the
+     page rather than an image pasted onto it. */
+  box-shadow:
+    0 0 0 1px rgba(247, 244, 236, 0.09),
+    0 10px 24px -14px rgba(0, 0, 0, 0.9);
 }
 
 /* --- turf --------------------------------------------------------------- */
@@ -11,40 +16,49 @@
   fill: var(--night-2);
 }
 
-.f-grass {
-  fill: var(--grass);
+.f-turf {
+  fill: url(#bq-turf);
 }
 
+/* The mow line where the infield ends: a shade, not a block of colour. */
 .f-grass-out {
-  fill: var(--grass-out);
+  fill: #000;
+  fill-opacity: 0.11;
+}
+
+.f-warning-track {
+  fill: none;
+  stroke: var(--track);
+  stroke-opacity: 0.6;
 }
 
 .f-dirt {
-  fill: var(--dirt);
+  fill: url(#bq-dirt);
 }
 
 .f-basepath {
   fill: none;
-  stroke: var(--dirt);
+  stroke: url(#bq-dirt);
   stroke-linejoin: round;
 }
 
 .f-mound {
   fill: var(--dirt-light);
+  fill-opacity: 0.75;
 }
 
 .f-fence {
   fill: none;
   stroke: var(--fence);
-  stroke-width: 3;
+  stroke-width: 2;
   stroke-linecap: round;
 }
 
 .f-chalk-line {
   fill: none;
   stroke: var(--chalk);
-  stroke-width: 2;
-  opacity: 0.85;
+  stroke-width: 1.75;
+  opacity: 0.9;
 }
 
 .f-plate {
@@ -54,42 +68,46 @@
 /* --- bases -------------------------------------------------------------- */
 
 .f-base {
-  fill: none;
+  fill: var(--night);
+  fill-opacity: 0.25;
   stroke: var(--chalk);
-  stroke-width: 2.5;
+  stroke-width: 2;
+  stroke-linejoin: round;
 }
 
 .f-base--occupied {
   fill: var(--chalk);
+  fill-opacity: 1;
 }
 
 .f-runner {
   fill: var(--runner);
   stroke: var(--night);
-  stroke-width: 2;
+  stroke-width: 1.75;
 }
 
 .f-runner-pip {
   fill: var(--chalk);
+  fill-opacity: 0.9;
 }
 
 /* --- fielders ----------------------------------------------------------- */
 
 .f-fielder-dot {
   fill: var(--night);
-  fill-opacity: 0.72;
+  fill-opacity: 0.82;
   stroke: var(--chalk);
-  stroke-width: 1.25;
-  stroke-opacity: 0.55;
+  stroke-width: 1;
+  stroke-opacity: 0.4;
 }
 
 .f-fielder-label {
   fill: var(--chalk);
-  fill-opacity: 0.8;
+  fill-opacity: 0.95;
   font-family: var(--font-scoreboard);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
   text-anchor: middle;
 }
 
@@ -97,23 +115,23 @@
   fill: var(--you);
   fill-opacity: 1;
   stroke: var(--night);
-  stroke-width: 2;
+  stroke-width: 1.75;
   stroke-opacity: 1;
 }
 
 .f-fielder--you .f-fielder-label {
   fill: var(--night);
   fill-opacity: 1;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 
-.f-you-ring {
-  fill: none;
+.f-you-glow {
+  fill: var(--you);
+  fill-opacity: 0.16;
   stroke: var(--you);
-  stroke-width: 2;
-  stroke-opacity: 0.55;
-  stroke-dasharray: 3 5;
+  stroke-width: 1;
+  stroke-opacity: 0.35;
 }
 
 /* --- batted ball -------------------------------------------------------- */

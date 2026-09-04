@@ -190,6 +190,13 @@ is, and the answer sits on top of everything because it is the point.
 the answer; blue marks the other team's runners so they never read as you. The
 spec's five colours had no way to say "this one is you".
 
+**The field is lit rather than flat.** Asked to look closer to a broadcast
+graphic, the turf and the clay each ramp between a far and a near shade, the
+outfield sits a shade darker than the infield, and there is a warning track
+inside the fence. Every addition is a shade of a colour the spec already chose.
+Mow stripes were tried and cut: at phone size they read as a target, and what
+makes these graphics look expensive is restraint, not more decoration.
+
 **The answer overlay geometry landed early, in M1 rather than M3.** Only the
 drawing, not the flow around it. The overlay is what proves the coordinates are
 right, and the whole point of stopping at M1 is to find out whether the

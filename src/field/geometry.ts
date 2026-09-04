@@ -59,9 +59,12 @@ export const BASEPATH_PATH =
   ` L ${THIRD.x} ${THIRD.y} Z`
 
 export const BASEPATH_WIDTH = 17
-export const BASE_CUTOUT_R = 21
-export const HOME_CIRCLE_R = 32
+export const BASE_CUTOUT_R = 17
+export const HOME_CIRCLE_R = 27
 export const MOUND_R = 17
+
+/** The dirt strip inside the fence that tells an outfielder the wall is close. */
+export const WARNING_TRACK_WIDTH = 7
 
 export const FOUL_LINE_R = `M ${HOME.x} ${HOME.y} L ${FOUL_POLE_R.x} ${FOUL_POLE_R.y}`
 export const FOUL_LINE_L = `M ${HOME.x} ${HOME.y} L ${FOUL_POLE_L.x} ${FOUL_POLE_L.y}`

@@ -24,6 +24,7 @@ import {
   BASE_CUTOUT_R,
   HOME_CIRCLE_R,
   MOUND_R,
+  WARNING_TRACK_WIDTH,
   HOME_PLATE_PATH,
   baseDiamond,
   scallop,
@@ -94,18 +95,52 @@ export function Field({
 
 // ---------------------------------------------------------------------------
 
+/**
+ * The field as a broadcast graphic rather than a flat illustration: turf and
+ * dirt carry a gradient so the far side of the field sits back, the outfield is
+ * a shade darker than the infield, and there is a warning track inside the
+ * fence.
+ *
+ * All of it is one static layer under the play, so none of it competes with the
+ * ball, the fielders or the answer.
+ */
 function Turf() {
   return (
     <g aria-hidden="true">
+      <defs>
+        {/* Light falls off toward the back of the field. */}
+        <linearGradient id="bq-turf" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--grass-far)" />
+          <stop offset="72%" stopColor="var(--grass)" />
+          <stop offset="100%" stopColor="var(--grass-near)" />
+        </linearGradient>
+        <linearGradient id="bq-dirt" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="var(--dirt-far)" />
+          <stop offset="100%" stopColor="var(--dirt-near)" />
+        </linearGradient>
+        <clipPath id="bq-fair">
+          <path d={FAIR_PATH} />
+        </clipPath>
+      </defs>
+
       <rect x="0" y="0" width={VIEW.w} height={VIEW.h} className="f-out-of-play" />
-      <path d={FAIR_PATH} className="f-grass" />
-      <path d={OUTFIELD_GRASS_PATH} className="f-grass-out" />
+
+      <g clipPath="url(#bq-fair)">
+        <path d={FAIR_PATH} className="f-turf" />
+        {/* The outfield is a shade darker than the infield, which is the one
+            turf cue worth keeping. Mow stripes were tried here and cut: at this
+            size they read as a target, and the look being aimed at is restraint. */}
+        <path d={OUTFIELD_GRASS_PATH} className="f-grass-out" />
+        <path d={FENCE_PATH} className="f-warning-track" strokeWidth={WARNING_TRACK_WIDTH} />
+      </g>
+
       <path d={BASEPATH_PATH} className="f-basepath" strokeWidth={BASEPATH_WIDTH} />
       {BASES.map(({ name, at }) => (
         <circle key={name} cx={at.x} cy={at.y} r={BASE_CUTOUT_R} className="f-dirt" />
       ))}
       <circle cx={HOME.x} cy={HOME.y} r={HOME_CIRCLE_R} className="f-dirt" />
       <circle cx={MOUND.x} cy={MOUND.y} r={MOUND_R} className="f-mound" />
+
       <path d={FENCE_PATH} className="f-fence" />
       <path d={FOUL_LINE_L} className="f-chalk-line" />
       <path d={FOUL_LINE_R} className="f-chalk-line" />
@@ -159,10 +194,12 @@ function Fielders({ youAre, alignment }: { youAre?: Position; alignment: Alignme
 }
 
 function Fielder({ pos, at, you = false }: { pos: Position; at: Pt; you?: boolean }) {
-  const r = you ? 14 : 11
+  const r = you ? 13 : 10.5
   return (
     <g className={you ? 'f-fielder f-fielder--you' : 'f-fielder'}>
-      {you ? <circle cx={at.x} cy={at.y} r={r + 5} className="f-you-ring" /> : null}
+      {/* A soft halo rather than a dashed outline: it reads as a highlight on a
+          broadcast graphic instead of a sticker stuck on the field. */}
+      {you ? <circle cx={at.x} cy={at.y} r={r + 7} className="f-you-glow" /> : null}
       <circle cx={at.x} cy={at.y} r={r} className="f-fielder-dot" />
       <text x={at.x} y={at.y} className="f-fielder-label" dominantBaseline="central">
         {pos}

@@ -797,9 +797,9 @@ export const WHERE_DO_I_GO: Scenario[] = [
     mode: 'where-do-i-go',
     divisions: [...BOTH],
     state: { outs: 0, runners: { first: false, second: false, third: false } },
-    ball: { type: 'ground', zone: 'foul right' },
+    ball: { type: 'ground', zone: 'right field corner' },
     youAre: 'RF',
-    prompt: 'A ball is slicing toward the line in your corner. What do you do?',
+    prompt: 'A fair ball is slicing toward the line in your corner. What do you do?',
     options: [
       { id: 'cut-off', label: 'Cut it off before it reaches the corner' },
       { id: 'follow', label: 'Follow it into the corner' },

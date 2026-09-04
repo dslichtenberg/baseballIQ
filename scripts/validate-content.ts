@@ -197,7 +197,38 @@ function checkOverlayDraws(s: Scenario) {
   })
 }
 
+/**
+ * Check the zone table against the field it describes.
+ *
+ * A zone whose name says "foul" but whose coordinates are in fair territory
+ * (or the reverse) draws a picture that contradicts the question. That is how a
+ * scenario about cutting off a fair ball down the line ended up rendering an
+ * obviously foul ball: the name was wrong, not the drawing.
+ */
+function checkZoneTable() {
+  // Home is at (200, 326) and the foul lines run out at 45 degrees, so fair
+  // territory is everything inside both of them.
+  const isFair = (p: { x: number; y: number }) => p.x + p.y <= 526 && p.y - p.x <= 126
+  const insideFence = (p: { x: number; y: number }) =>
+    Math.hypot(p.x - 200, p.y - 202.2) <= 176.2
+
+  for (const name of BALL_ZONE_NAMES) {
+    const p = refPoint(name)
+    const shouldBeFoul = name.startsWith('foul ')
+    if (shouldBeFoul && isFair(p)) {
+      errors.push(`zone table: "${name}" is named foul but sits in fair territory`)
+    }
+    if (!shouldBeFoul && !isFair(p)) {
+      errors.push(`zone table: "${name}" sits in foul territory but is not named "foul ..."`)
+    }
+    if (!insideFence(p)) {
+      errors.push(`zone table: "${name}" is outside the fence, so a ball cannot land there`)
+    }
+  }
+}
+
 const seen = new Set<string>()
+checkZoneTable()
 for (const s of SCENARIOS) checkScenario(s, seen)
 
 const label = `${SCENARIOS.length} scenario${SCENARIOS.length === 1 ? '' : 's'}`

@@ -54,6 +54,14 @@ export const BALL_ZONES = {
   'deep right center': { x: 263, y: 72 },
   'deep right': { x: 323, y: 95 },
 
+  // --- fair, but down the line in the outfield corner ---
+  // Distinct from the foul zones below, and the distinction matters: a ball
+  // slicing toward the line that an outfielder has to cut off is FAIR. Sending
+  // one of those to "foul right" draws an obviously foul ball and makes the
+  // question look broken.
+  'left field corner': { x: 44, y: 158 },
+  'right field corner': { x: 356, y: 158 },
+
   // --- foul territory ---
   'foul left': { x: 86, y: 280 },
   'foul right': { x: 314, y: 280 },

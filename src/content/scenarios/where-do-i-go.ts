@@ -125,7 +125,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: false, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'C',
-    prompt: 'A routine grounder goes to short. What is your job?',
+    prompt: 'Nobody is on base. A routine grounder goes to short. What is your job?',
     options: [
       { id: 'backup', label: 'Run down and back up first' },
       { id: 'plate', label: 'Stay at the plate' },
@@ -134,7 +134,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'backup',
     explanation:
-      'With the bases empty there is nothing to guard at home. An overthrow at first with nobody behind it turns a routine out into a double. It is the hardest hustle play a catcher has.',
+      'With the bases empty there is nothing to guard at home. Two of you back up first on this play. The right fielder takes anything that sails deep, and you trail the batter for the ball that skips past up close.',
     overlay: { steps: [{ kind: 'move', who: 'C', to: 'backup first' }] },
     tags: ['backup'],
   },
@@ -145,7 +145,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     state: { outs: 1, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'C',
-    prompt: 'A ground ball goes to short. What is your job?',
+    prompt: 'There is a runner on second. A ground ball goes to short. What is your job?',
     options: [
       { id: 'home', label: 'Stay home and guard the plate' },
       { id: 'first', label: 'Back up first base' },
@@ -193,7 +193,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     ],
     correctOptionId: 'first',
     explanation:
-      'The longest throw in the infield is the one most likely to sail. Behind first base is foul ground, where the ball keeps rolling. Get over there on every ground ball to the left side.',
+      'The longest throw in the infield is the one most likely to sail. Behind first base is foul ground, where the ball keeps rolling. The catcher trails the batter for anything close, so you have the ball that gets deep. Get over there on every ground ball to the left side.',
     overlay: { steps: [{ kind: 'move', who: 'RF', to: 'backup first' }] },
     tags: ['backup'],
   },
@@ -739,7 +739,7 @@ export const WHERE_DO_I_GO: Scenario[] = [
     divisions: ['Majors'],
     state: { outs: 1, runners: { first: true, second: false, third: true } },
     youAre: 'C',
-    prompt: 'The runner on first takes off for second. What do you do?',
+    prompt: 'There is a runner on third. The runner on first takes off for second. What do you do?',
     options: [
       { id: 'look', label: 'Check the runner on third first' },
       { id: 'throw', label: 'Throw straight through to second' },

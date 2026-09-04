@@ -148,7 +148,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: false, third: true } },
     ball: { type: 'ground', zone: 'shortstop hole' },
     youAre: 'SS',
-    prompt: 'A ground ball comes to you. Where do you throw it?',
+    prompt: 'Runners are on first and third. A ground ball comes to you. Where do you throw it?',
     options: [
       { id: 'second', label: 'Throw to second for the force' },
       { id: 'home', label: 'Throw home' },
@@ -193,7 +193,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: true, third: false } },
     ball: { type: 'ground', zone: 'up the middle' },
     youAre: 'SS',
-    prompt: 'A ground ball up the middle comes to you. Where do you throw it?',
+    prompt: 'The only runner is on second. A ground ball comes to you. Where do you throw it?',
     options: [
       { id: 'first', label: 'Throw to first' },
       { id: 'third', label: 'Throw to third' },
@@ -420,7 +420,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 1, runners: { first: true, second: true, third: true } },
     ball: { type: 'bunt', zone: 'in front of plate', speed: 'slow' },
     youAre: 'C',
-    prompt: 'A bunt dies in front of the plate. What is the quickest out?',
+    prompt: 'The bases are loaded. A bunt dies in front of the plate. What is the quickest out?',
     options: [
       { id: 'step-home', label: 'Step on home plate' },
       { id: 'first', label: 'Throw to first' },
@@ -463,7 +463,7 @@ export const MAKE_THE_PLAY: Scenario[] = [
     state: { outs: 0, runners: { first: false, second: false, third: false } },
     ball: { type: 'bunt', zone: 'in front of plate' },
     youAre: 'C',
-    prompt: 'A bunt rolls out in front of the plate. What do you do?',
+    prompt: 'Nobody is on base. A bunt rolls out in front of the plate. What do you do?',
     options: [
       { id: 'first', label: 'Pounce on it, throw to first' },
       { id: 'wait', label: 'Wait and see if it goes foul' },
@@ -805,31 +805,6 @@ export const MAKE_THE_PLAY: Scenario[] = [
   // -------------------------------------------------------------------------
   // Pitcher and catcher plays
   // -------------------------------------------------------------------------
-  {
-    id: 'a-pitcher-covers-first',
-    mode: 'make-the-play',
-    divisions: [...BOTH],
-    state: { outs: 0, runners: { first: false, second: false, third: false } },
-    ball: { type: 'ground', zone: 'first' },
-    youAre: 'P',
-    prompt: 'A ground ball pulls the first baseman off the bag toward you. What do you do?',
-    options: [
-      { id: 'cover', label: 'Sprint over and cover first' },
-      { id: 'watch', label: 'Watch him make the play' },
-      { id: 'ball', label: 'Go help field the ball' },
-      { id: 'second', label: 'Cover second base' },
-    ],
-    correctOptionId: 'cover',
-    explanation:
-      'Once the first baseman leaves the bag, there is nobody there to catch his throw and the batter runs through untouched. Break for the bag the instant the ball goes to that side.',
-    overlay: {
-      steps: [
-        { kind: 'move', who: 'P', to: 'first' },
-        { kind: 'throw', from: '1B', to: 'first' },
-      ],
-    },
-    tags: ['covering a base'],
-  },
   {
     id: 'a-catcher-blocks-then-checks',
     mode: 'make-the-play',

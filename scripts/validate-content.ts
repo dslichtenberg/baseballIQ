@@ -227,9 +227,51 @@ function checkZoneTable() {
   }
 }
 
+/**
+ * Catch two scenarios a player cannot tell apart.
+ *
+ * Same mode, same position, near-identical wording, opposite answers: the only
+ * thing separating them is the scoreboard, and a kid who does not read it gets
+ * one of them wrong every time and cannot see why. Whatever makes the answer
+ * different has to be in the words too, even though the strip repeats it.
+ *
+ * Only flags the dangerous shape. Two scenarios that read alike but have
+ * different positions are fine, because the screen says who you are.
+ */
+function checkForConfusablePairs(all: Scenario[]) {
+  const words = (t: string) =>
+    new Set(t.toLowerCase().replace(/[^a-z ]/g, '').split(/\s+/).filter(Boolean))
+
+  const overlap = (a: Set<string>, b: Set<string>) => {
+    let shared = 0
+    for (const w of a) if (b.has(w)) shared++
+    return shared / (a.size + b.size - shared)
+  }
+
+  const answer = (s: Scenario) =>
+    s.options.find((o) => o.id === s.correctOptionId)?.label.trim().toLowerCase() ?? ''
+
+  for (let i = 0; i < all.length; i++) {
+    for (let j = i + 1; j < all.length; j++) {
+      const a = all[i]
+      const b = all[j]
+      if (a.mode !== b.mode || a.youAre !== b.youAre) continue
+      if (answer(a) === answer(b)) continue
+      const sim = overlap(words(a.prompt), words(b.prompt))
+      if (sim >= 0.6) {
+        errors.push(
+          `${a.id} and ${b.id} read almost the same (${Math.round(sim * 100)}% of the same words) ` +
+            `to the same fielder, but have different answers. Put the difference in the prompt.`,
+        )
+      }
+    }
+  }
+}
+
 const seen = new Set<string>()
 checkZoneTable()
 for (const s of SCENARIOS) checkScenario(s, seen)
+checkForConfusablePairs(SCENARIOS)
 
 const label = `${SCENARIOS.length} scenario${SCENARIOS.length === 1 ? '' : 's'}`
 const zones = `${BALL_ZONE_NAMES.length} ball zones, ${ZONE_NAMES.length} zones total`

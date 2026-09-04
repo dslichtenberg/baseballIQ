@@ -100,15 +100,49 @@ export const FOUL_LINE_R = polyline([project(HOME_FT), project(polar(FENCE_FT, F
 // --- dirt ------------------------------------------------------------------
 
 /**
- * The basepaths as one stroked diamond with round joins, so the corners at each
+ * How far the dirt reaches past second base, and how much of the turn it takes
+ * to get there. Struck around the bag itself, not around home, so the two legs
+ * arrive within about six degrees of the arc's tangent and the join reads as
+ * one continuous edge rather than a corner with something stuck on it.
+ */
+const SECOND_ROUND_FT = 10
+const SECOND_ROUND_DEG = 60
+
+/**
+ * The basepaths as one stroked ribbon with round joins, so the corners at each
  * base are part of the path instead of separate discs sitting on top of it.
  * Drawing them as circles was what made the old field look assembled rather
  * than built.
+ *
+ * Second is the exception to the diamond: a real skinned infield carries the
+ * dirt around behind the bag, and a hard point there was the one corner that
+ * looked drawn rather than played on.
  */
 export const BASEPATH_PATH = polyline(
-  [project(HOME_FT), project(FIRST_FT), project(SECOND_FT), project(THIRD_FT)],
+  [
+    project(HOME_FT),
+    project(FIRST_FT),
+    ...aroundBase(SECOND_FT, SECOND_ROUND_FT, SECOND_ROUND_DEG, -SECOND_ROUND_DEG),
+    project(THIRD_FT),
+  ],
   true,
 )
+
+/**
+ * Points on a circle struck from a base, swept from one bearing to another.
+ * Zero degrees is straight out from home, so a sweep from +deg to -deg passes
+ * behind the bag.
+ */
+function aroundBase(centre: FieldPt, radiusFt: number, fromDeg: number, toDeg: number): Pt[] {
+  const steps = Math.max(1, Math.ceil(Math.abs(toDeg - fromDeg) / 8))
+  return Array.from({ length: steps + 1 }, (_, i) => {
+    const a = ((fromDeg + ((toDeg - fromDeg) * i) / steps) * Math.PI) / 180
+    return project({
+      fx: centre.fx + radiusFt * Math.sin(a),
+      fy: centre.fy + radiusFt * Math.cos(a),
+    })
+  })
+}
 
 /** Home plate's dirt, and the mound. Both are real circles on real ground. */
 export const HOME_CIRCLE_PATH = polyline(circleFt(HOME_FT, 13), true)

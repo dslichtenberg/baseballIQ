@@ -145,9 +145,18 @@ Little League field is about 200 ft to the fence and 60 ft between bases, which
 on a phone leaves the infield tiny. Nearly every question in this app happens
 in the infield, so it gets the room.
 
-**Dirt is basepaths and base cutouts, not a filled skin.** The first attempt
-drew the infield as a solid dirt wedge and it swallowed the outfield. A mow
-line separates infield grass from outfield grass instead.
+**Dirt is one basepath ribbon, not a filled skin.** The first attempt drew the
+infield as a solid dirt wedge and it swallowed the outfield. A mow line
+separates infield grass from outfield grass instead. Second base is the one
+place the ribbon leaves the diamond: the dirt carries around behind the bag on
+a ten foot arc struck from the base, because that corner drawn as a point was
+the only part of the field that still looked drawn rather than played on.
+
+**The middle infielders play about twenty feet behind the baseline**, which is
+shallower than the first pass had them. Deeper than that and they read as short
+outfielders, which is the opposite of what this app is trying to teach. The
+three alignments are calibrated off that: double play depth is a step in and a
+step toward second, infield in is up on the baseline.
 
 **Ball paths carry their type in their shape**, because a bird's eye view
 cannot show height. Ground balls and bunts scallop, line drives are straight,

@@ -17,14 +17,19 @@ export type Alignment = 'normal' | 'infield in' | 'corners in' | 'double play de
  * Where each fielder stands at normal depth, in feet from home and degrees off
  * the centre line. Little League depth, not MLB: the outfielders play shallow
  * because nobody at this age can throw from the fence.
+ *
+ * The middle infielders are the ones easiest to get wrong. On a 60 ft diamond
+ * they set up around twenty feet behind the baseline, not out on the edge of
+ * the grass — deeper than that and they read as short outfielders, which is
+ * exactly the instinct this app is trying not to teach.
  */
 export const POSITIONS = {
   P: polar(50, 0),
   C: polar(16, 180),
   '1B': polar(72, 36),
-  '2B': polar(115, 22),
+  '2B': polar(90, 21),
   '3B': polar(70, -38),
-  SS: polar(115, -22),
+  SS: polar(90, -21),
   LF: polar(142, -30),
   CF: polar(148, 0),
   RF: polar(142, 30),
@@ -42,17 +47,17 @@ const ALIGNMENT_SHIFTS: Record<Alignment, Partial<Record<Position, FieldPt>>> = 
   normal: {},
   'infield in': {
     '1B': polar(52, 40),
-    '2B': polar(80, 26),
+    '2B': polar(74, 24),
     '3B': polar(52, -40),
-    SS: polar(80, -26),
+    SS: polar(74, -24),
   },
   'corners in': {
     '1B': polar(52, 40),
     '3B': polar(52, -40),
   },
   'double play depth': {
-    '2B': polar(104, 20),
-    SS: polar(104, -20),
+    '2B': polar(82, 17),
+    SS: polar(82, -17),
   },
 }
 
